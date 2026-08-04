@@ -1,0 +1,499 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f5ef;
+  --foreground: #151515;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+select,
+textarea {
+  font: inherit;
+}
+
+.arena-shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 44px;
+}
+
+.topbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #8d3728;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  max-width: 720px;
+  margin-bottom: 0;
+  font-size: clamp(2.1rem, 5vw, 4.4rem);
+  line-height: 0.98;
+  letter-spacing: 0;
+}
+
+.mode-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-width: 214px;
+  overflow: hidden;
+  border: 1px solid #d8d0c0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.mode-switch button {
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: #514b43;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.mode-switch button.active {
+  background: #151515;
+  color: #ffffff;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.4fr) minmax(220px, 0.9fr) minmax(240px, 1fr) minmax(220px, 0.85fr);
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.debate-panel,
+.judge-panel,
+.section-block,
+.profile-panel,
+.achievement-panel,
+.friends-panel,
+.available-panel {
+  border: 1px solid #ded7ca;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 18px 60px rgba(45, 35, 20, 0.08);
+}
+
+.profile-panel,
+.achievement-panel,
+.friends-panel,
+.available-panel {
+  min-height: 220px;
+  padding: 18px;
+}
+
+.profile-panel {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  background: #151515;
+  color: #ffffff;
+}
+
+.profile-panel p:not(.eyebrow) {
+  margin-bottom: 0;
+  color: #ded7ca;
+  line-height: 1.5;
+}
+
+.profile-panel .eyebrow {
+  color: #f0b86e;
+}
+
+.avatar {
+  display: grid;
+  width: 82px;
+  height: 82px;
+  place-items: center;
+  border-radius: 50%;
+  background: #e0523f;
+  color: #ffffff;
+  font-size: 1.4rem;
+  font-weight: 950;
+}
+
+.achievement-list {
+  display: grid;
+  gap: 10px;
+}
+
+.achievement-list div {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 8px;
+  background: #fbfaf7;
+  padding: 12px;
+}
+
+.achievement-list strong {
+  flex: 0 0 auto;
+  font-size: 1.55rem;
+}
+
+.achievement-list span {
+  color: #5d554b;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.friend-list {
+  display: grid;
+  gap: 10px;
+}
+
+.friend-list button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  border: 1px solid #e4dccf;
+  border-radius: 8px;
+  background: #fbfaf7;
+  color: #151515;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.friend-list span {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+}
+
+.friend-list em {
+  color: #265a53;
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.available-panel {
+  display: grid;
+  align-content: space-between;
+  background: #265a53;
+  color: #ffffff;
+}
+
+.available-panel .eyebrow {
+  color: #f0b86e;
+}
+
+.available-panel p {
+  color: #e7f1ee;
+  line-height: 1.5;
+}
+
+.available-panel button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #151515;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.debate-panel {
+  padding: 20px;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+select {
+  width: min(100%, 620px);
+  min-height: 46px;
+  border: 1px solid #d8d0c0;
+  border-radius: 8px;
+  background: #fbfaf7;
+  color: #151515;
+  padding: 0 14px;
+  font-weight: 750;
+}
+
+.timer {
+  min-width: 86px;
+  border-radius: 8px;
+  background: #265a53;
+  color: #ffffff;
+  padding: 12px 14px;
+  text-align: center;
+  font-weight: 900;
+}
+
+.speech-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+label {
+  display: grid;
+  gap: 10px;
+  color: #4d463d;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+textarea {
+  width: 100%;
+  min-height: 310px;
+  resize: vertical;
+  border: 1px solid #d8d0c0;
+  border-radius: 8px;
+  background: #fbfaf7;
+  color: #161616;
+  padding: 16px;
+  line-height: 1.5;
+}
+
+textarea:focus,
+select:focus,
+button:focus-visible {
+  outline: 3px solid rgba(38, 90, 83, 0.25);
+  outline-offset: 2px;
+}
+
+.judge-panel {
+  padding: 20px;
+}
+
+.judge-panel h2 {
+  margin-bottom: 24px;
+  font-size: 2rem;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  color: #4d463d;
+  font-weight: 800;
+}
+
+.score-row strong {
+  color: #151515;
+}
+
+.meter {
+  height: 12px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eee8dd;
+}
+
+.meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #e0523f;
+}
+
+.meter.alt span {
+  background: #265a53;
+}
+
+.feedback {
+  margin-top: 26px;
+  border-top: 1px solid #e7dfd1;
+  padding-top: 20px;
+}
+
+.feedback h3,
+.video-card h3,
+.competition-card h3 {
+  margin-bottom: 8px;
+}
+
+.feedback p,
+.video-card p,
+.competition-card p {
+  color: #5d554b;
+  line-height: 1.55;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.section-block {
+  padding: 20px;
+}
+
+.section-title {
+  margin-bottom: 16px;
+}
+
+.section-title h2 {
+  margin-bottom: 0;
+}
+
+.video-list,
+.competition-list {
+  display: grid;
+  gap: 12px;
+}
+
+.video-card,
+.competition-card {
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  min-height: 112px;
+  border: 1px solid #e4dccf;
+  border-radius: 8px;
+  padding: 12px;
+  background: #fbfaf7;
+}
+
+.video-thumb {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(224, 82, 63, 0.92), rgba(38, 90, 83, 0.92)),
+    repeating-linear-gradient(45deg, transparent 0 10px, rgba(255, 255, 255, 0.2) 10px 11px);
+}
+
+.video-thumb span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform: translate(-38%, -50%);
+  border-bottom: 14px solid transparent;
+  border-left: 22px solid #ffffff;
+  border-top: 14px solid transparent;
+}
+
+small {
+  color: #8d3728;
+  font-weight: 850;
+}
+
+.competition-card {
+  grid-template-columns: 1fr auto;
+}
+
+.competition-card span {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  min-width: 58px;
+  border-radius: 999px;
+  background: #151515;
+  color: #ffffff;
+  padding: 7px 10px;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.competition-card strong {
+  color: #265a53;
+}
+
+@media (max-width: 900px) {
+  .topbar,
+  .panel-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .hero-grid,
+  .content-grid,
+  .speech-grid,
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-switch {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .arena-shell {
+    width: min(100% - 20px, 1180px);
+    padding-top: 18px;
+  }
+
+  .debate-panel,
+  .judge-panel,
+  .section-block {
+    padding: 14px;
+  }
+
+  .video-card,
+  .competition-card,
+  .profile-panel {
+    grid-template-columns: 1fr;
+  }
+
+
+  .competition-card span {
+    grid-column: auto;
+    grid-row: auto;
+    width: max-content;
+  }
+}
