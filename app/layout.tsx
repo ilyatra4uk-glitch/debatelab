@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "DebateLab",
   description:
-    "Practice debate skills, challenge friends, receive judging feedback, and enter competitions.",
+    "Track your debate profile, friends, learning videos, and competitions.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
