@@ -1,9 +1,3 @@
-"use client";
-
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
 const navItems = [
   { href: "/videos", label: "Videos" },
   { href: "/debate-bot", label: "Debate with bot" },
@@ -13,10 +7,6 @@ const navItems = [
 ];
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const isActive = (href: string) => pathname === href;
-
   return (
     <main className="min-h-screen bg-[#f7f5ef] text-[#151515]">
       <section className="arena-shell">
@@ -27,28 +17,25 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         </header>
 
         <div className="workspace-layout">
-          <div className={sidebarOpen ? "sidebar-wrap" : "sidebar-wrap closed"}>
-            <button
+          <div className="sidebar-wrap">
+            <input
+              className="sidebar-checkbox"
+              id="sidebar-toggle"
+              type="checkbox"
+            />
+            <label
               className="sidebar-toggle"
-              type="button"
-              aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
-              aria-expanded={sidebarOpen}
-              onClick={() => setSidebarOpen((open) => !open)}
-            >
-              {sidebarOpen ? "<" : ">"}
-            </button>
+              htmlFor="sidebar-toggle"
+              aria-label="Open or close sidebar"
+            />
             <aside className="sidebar" aria-label="Section navigation">
-              <Link aria-current={isActive("/") ? "page" : undefined} href="/">
+              <a href="/">
                 Home
-              </Link>
+              </a>
               {navItems.map((item) => (
-                <Link
-                  aria-current={isActive(item.href) ? "page" : undefined}
-                  href={item.href}
-                  key={item.href}
-                >
+                <a href={item.href} key={item.href}>
                   {item.label}
-                </Link>
+                </a>
               ))}
             </aside>
           </div>

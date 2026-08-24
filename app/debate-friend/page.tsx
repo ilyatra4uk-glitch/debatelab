@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { SiteShell } from "../SiteShell";
+import { VoiceArgumentBox } from "../VoiceArgumentBox";
 import { friends } from "../data";
 
 export default function DebateFriendPage() {
@@ -26,10 +27,10 @@ export default function DebateFriendPage() {
             </button>
           ))}
         </div>
-        <label className="debate-field">
-          <span>Round notes</span>
-          <textarea placeholder="Add the motion, teams, and speaking order..." />
-        </label>
+        <VoiceArgumentBox
+          label="Round notes"
+          placeholder="Add the motion, teams, and speaking order, or record it..."
+        />
         <button className="primary-action" type="button">
           Start friend debate
         </button>

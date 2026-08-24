@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { SiteShell } from "../SiteShell";
+import { VoiceArgumentBox } from "../VoiceArgumentBox";
 import { debatePrompts } from "../data";
 
 export default function DebateBotPage() {
@@ -25,10 +26,10 @@ export default function DebateBotPage() {
             </button>
           ))}
         </div>
-        <label className="debate-field">
-          <span>Your argument</span>
-          <textarea placeholder="Write your opening argument..." />
-        </label>
+        <VoiceArgumentBox
+          label="Your argument"
+          placeholder="Write your opening argument, or press record and speak..."
+        />
         <button className="primary-action" type="button">
           Start bot debate
         </button>

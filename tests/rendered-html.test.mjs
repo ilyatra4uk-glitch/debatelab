@@ -19,7 +19,7 @@ test("home page contains the debate dashboard sections", async () => {
   assert.match(data, /Debates lost/);
   assert.match(source, /Friends/);
   assert.match(shell, /sidebar-toggle/);
-  assert.match(shell, /Close sidebar|Open sidebar/);
+  assert.match(shell, /sidebar-checkbox/);
   assert.doesNotMatch(source, /Judge decision/);
   assert.doesNotMatch(source, /Bot response|Current motion/);
 });
@@ -37,9 +37,8 @@ test("championships page contains available championships", async () => {
 test("sidebar links navigate to separate pages", async () => {
   const shell = await readFile(new URL("../app/SiteShell.tsx", import.meta.url), "utf8");
 
-  assert.match(shell, /usePathname/);
-  assert.match(shell, /next\/link/);
-  assert.match(shell, /aria-current/);
+  assert.doesNotMatch(shell, /usePathname/);
+  assert.doesNotMatch(shell, /next\/link/);
   assert.match(shell, /href: "\/videos"/);
   assert.match(shell, /href: "\/debate-bot"/);
   assert.match(shell, /href: "\/debate-friend"/);
@@ -47,15 +46,28 @@ test("sidebar links navigate to separate pages", async () => {
   assert.match(shell, /href: "\/friends"/);
 });
 
-test("video lessons use playable embeds only where supported", async () => {
+test("video lessons use embedded players", async () => {
   const source = await readFile(
     new URL("../app/videos/page.tsx", import.meta.url),
     "utf8",
   );
 
-  assert.match(source, /youtube\.com\/embed/);
-  assert.match(source, /Watch lesson/);
-  assert.match(source, /video-thumb/);
+  assert.match(source, /iframe/);
+  assert.match(source, /video-embed/);
+  assert.doesNotMatch(source, /Watch video/);
+});
+
+test("debate pages support voice recording", async () => {
+  const [voice, botPage, friendPage] = await Promise.all([
+    readFile(new URL("../app/VoiceArgumentBox.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/debate-bot/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/debate-friend/page.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(voice, /SpeechRecognition/);
+  assert.match(voice, /Record speech/);
+  assert.match(botPage, /VoiceArgumentBox/);
+  assert.match(friendPage, /VoiceArgumentBox/);
 });
 
 test("starter preview references are removed", async () => {
