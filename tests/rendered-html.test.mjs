@@ -17,7 +17,8 @@ test("home page contains the debate dashboard sections", async () => {
   assert.match(source, /Profile/);
   assert.match(data, /Debates won/);
   assert.match(data, /Debates lost/);
-  assert.match(source, /Friends/);
+  assert.match(source, /href="\/videos"/);
+  assert.match(source, /Watch debate lessons/);
   assert.match(shell, /sidebar-toggle/);
   assert.match(shell, /sidebar-checkbox/);
   assert.doesNotMatch(source, /Judge decision/);

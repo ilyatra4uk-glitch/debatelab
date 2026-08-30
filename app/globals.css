@@ -173,6 +173,7 @@ h1 {
 .section-block,
 .profile-panel,
 .stat-panel,
+.home-link-panel,
 .friends-panel,
 .available-panel {
   border: 1px solid #ded7ca;
@@ -183,6 +184,7 @@ h1 {
 
 .profile-panel,
 .stat-panel,
+.home-link-panel,
 .friends-panel,
 .available-panel {
   aspect-ratio: 1;
@@ -239,6 +241,37 @@ h1 {
 
 .stat-panel:nth-of-type(3) .eyebrow {
   color: #8d3728;
+}
+
+.home-link-panel {
+  display: grid;
+  align-content: space-between;
+  background: #265a53;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.home-link-panel .eyebrow {
+  color: #f0b86e;
+}
+
+.home-link-panel h2 {
+  max-width: 260px;
+  margin-bottom: 0;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1;
+}
+
+.home-link-panel span {
+  display: inline-flex;
+  width: max-content;
+  min-height: 44px;
+  align-items: center;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #151515;
+  padding: 0 14px;
+  font-weight: 900;
 }
 
 .friend-list {
@@ -730,6 +763,7 @@ small {
 
   .profile-panel,
   .stat-panel,
+  .home-link-panel,
   .friends-panel,
   .available-panel {
     aspect-ratio: auto;

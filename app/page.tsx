@@ -1,5 +1,5 @@
 import { SiteShell } from "./SiteShell";
-import { achievements, friends } from "./data";
+import { achievements } from "./data";
 
 export default function Home() {
   return (
@@ -23,20 +23,11 @@ export default function Home() {
           </article>
         ))}
 
-        <article className="friends-panel">
-          <p className="eyebrow">Friends</p>
-          <div className="friend-list">
-            {friends.map((friend) => (
-              <button key={friend.name} type="button">
-                <span>
-                  <strong>{friend.name}</strong>
-                  <small>{friend.record}</small>
-                </span>
-                <em>{friend.status}</em>
-              </button>
-            ))}
-          </div>
-        </article>
+        <a className="home-link-panel" href="/videos">
+          <p className="eyebrow">Videos</p>
+          <h2>Watch debate lessons</h2>
+          <span>Open videos</span>
+        </a>
       </section>
     </SiteShell>
   );
