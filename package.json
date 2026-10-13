@@ -9,8 +9,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "npm run build && node --test tests/rendered-html.test.mjs",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "test": "next build && node --test tests/rendered-html.test.mjs",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .vercel",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
@@ -36,6 +36,5 @@
     "vinext": "0.0.50",
     "vite": "8.0.13",
     "wrangler": "4.92.0"
-  },
-  "type": "module"
+  }
 }

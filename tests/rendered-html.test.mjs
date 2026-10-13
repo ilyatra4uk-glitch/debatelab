@@ -41,6 +41,7 @@ test("sidebar links navigate to separate pages", async () => {
   assert.doesNotMatch(shell, /usePathname/);
   assert.doesNotMatch(shell, /next\/link/);
   assert.match(shell, /href: "\/videos"/);
+  assert.match(shell, /href: "\/login"/);
   assert.match(shell, /href: "\/debate-bot"/);
   assert.match(shell, /href: "\/debate-friend"/);
   assert.match(shell, /href: "\/championships"/);
@@ -69,6 +70,22 @@ test("debate pages support voice recording", async () => {
   assert.match(voice, /Record speech/);
   assert.match(botPage, /VoiceArgumentBox/);
   assert.match(friendPage, /VoiceArgumentBox/);
+});
+
+test("login uses a magic link flow", async () => {
+  const [loginPage, loginRoute, verifyRoute, store] = await Promise.all([
+    readFile(new URL("../app/login/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/login/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/login/verify/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/lib/debate-store.ts", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(loginPage, /Magic link login/);
+  assert.match(loginPage, /Open magic link/);
+  assert.match(loginRoute, /createMagicLoginToken/);
+  assert.match(verifyRoute, /consumeMagicLoginToken/);
+  assert.match(store, /expiresAt/);
+  assert.match(store, /usedAt/);
 });
 
 test("starter preview references are removed", async () => {

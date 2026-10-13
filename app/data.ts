@@ -162,4 +162,6 @@ export const friends = [
 export const debatePrompts = [
   "THW abolish private schools",
   "THBT climate adaptation should be prioritized over mitigation in the Global South",
+  "THBT social media platforms should be liable for algorithmic harm",
+  "THW require universities to publish graduate income outcomes",
 ];

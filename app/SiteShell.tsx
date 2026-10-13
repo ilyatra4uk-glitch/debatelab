@@ -1,4 +1,8 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
+
 const navItems = [
+  { href: "/register", label: "Register" },
+  { href: "/login", label: "Login" },
   { href: "/videos", label: "Videos" },
   { href: "/debate-bot", label: "Debate with bot" },
   { href: "/debate-friend", label: "Debate with a friend" },

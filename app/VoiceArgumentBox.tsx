@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type SpeechRecognitionResultItem = {
   transcript: string;
@@ -42,15 +42,29 @@ type SpeechWindow = Window & {
 export function VoiceArgumentBox({
   label,
   placeholder,
+  value,
+  onChange,
 }: {
   label: string;
   placeholder: string;
+  value?: string;
+  onChange?: (value: string) => void;
 }) {
-  const [text, setText] = useState("");
+  const [internalText, setInternalText] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isSupported, setIsSupported] = useState(true);
   const [message, setMessage] = useState("Press record and start speaking.");
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const text = value ?? internalText;
+
+  const updateText = useCallback((nextText: string) => {
+    if (onChange) {
+      onChange(nextText);
+      return;
+    }
+
+    setInternalText(nextText);
+  }, [onChange]);
 
   useEffect(() => {
     const speechWindow = window as SpeechWindow;
@@ -58,6 +72,8 @@ export function VoiceArgumentBox({
       speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
 
     if (!Recognition) {
+      // Voice capability is only knowable after the browser APIs exist.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsSupported(false);
       setMessage("Voice recording is not supported in this browser.");
       return;
@@ -72,7 +88,7 @@ export function VoiceArgumentBox({
       for (let index = event.resultIndex; index < event.results.length; index += 1) {
         transcript += event.results[index][0].transcript;
       }
-      setText((current) => `${current} ${transcript}`.trim());
+      updateText(`${text} ${transcript}`.trim());
     };
     recognition.onerror = () => {
       setIsListening(false);
@@ -87,7 +103,7 @@ export function VoiceArgumentBox({
       recognition.stop();
       recognitionRef.current = null;
     };
-  }, []);
+  }, [text, updateText]);
 
   function toggleListening() {
     const recognition = recognitionRef.current;
@@ -110,7 +126,7 @@ export function VoiceArgumentBox({
       <label className="debate-field">
         <span>{label}</span>
         <textarea
-          onChange={(event) => setText(event.target.value)}
+          onChange={(event) => updateText(event.target.value)}
           placeholder={placeholder}
           value={text}
         />
@@ -126,7 +142,7 @@ export function VoiceArgumentBox({
         </button>
         <button
           className="secondary-action"
-          onClick={() => setText("")}
+          onClick={() => updateText("")}
           type="button"
         >
           Clear
