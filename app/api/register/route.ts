@@ -7,6 +7,10 @@ import {
   getOrCreateUser,
   getUserByEmail,
 } from "@/app/lib/debate-store";
+import {
+  getSupabaseAuthClient,
+  isSupabaseAuthConfigured,
+} from "@/app/lib/supabase-server";
 import type { ChatGPTUser } from "@/app/chatgpt-auth";
 
 export const runtime = "nodejs";
@@ -45,9 +49,36 @@ export async function POST(request: Request) {
         { status: 409 },
       );
     }
-    await getOrCreateUser(user);
+    const storedUser = await getOrCreateUser(user);
 
-    const response = NextResponse.json({ user }, { status: 201 });
+    if (isSupabaseAuthConfigured()) {
+      const callbackUrl = new URL("/api/login/callback", request.url);
+      const { error } = await getSupabaseAuthClient().auth.signInWithOtp({
+        email,
+        options: {
+          data: {
+            display_name: displayName,
+            full_name: displayName,
+          },
+          emailRedirectTo: callbackUrl.toString(),
+          shouldCreateUser: true,
+        },
+      });
+
+      if (error) {
+        return Response.json({ error: error.message }, { status: 500 });
+      }
+
+      return Response.json(
+        {
+          emailSent: true,
+          user: storedUser,
+        },
+        { status: 201 },
+      );
+    }
+
+    const response = NextResponse.json({ user: storedUser }, { status: 201 });
     response.cookies.set({
       name: registeredUserCookieName(),
       value: encodeRegisteredUser(user),

@@ -73,19 +73,36 @@ test("debate pages support voice recording", async () => {
 });
 
 test("login uses a magic link flow", async () => {
-  const [loginPage, loginRoute, verifyRoute, store] = await Promise.all([
+  const [loginPage, loginRoute, callbackRoute, verifyRoute, store] = await Promise.all([
     readFile(new URL("../app/login/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/api/login/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/login/callback/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/api/login/verify/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/lib/debate-store.ts", import.meta.url), "utf8"),
   ]);
 
   assert.match(loginPage, /Magic link login/);
   assert.match(loginPage, /Open magic link/);
+  assert.match(loginPage, /Check your email/);
+  assert.match(loginRoute, /signInWithOtp/);
   assert.match(loginRoute, /createMagicLoginToken/);
+  assert.match(callbackRoute, /exchangeCodeForSession/);
   assert.match(verifyRoute, /consumeMagicLoginToken/);
   assert.match(store, /expiresAt/);
   assert.match(store, /usedAt/);
+});
+
+test("store can use Supabase for persistent app data", async () => {
+  const [store, supabase] = await Promise.all([
+    readFile(new URL("../app/lib/debate-store.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/lib/supabase-server.ts", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(supabase, /SUPABASE_SERVICE_ROLE_KEY/);
+  assert.match(store, /isSupabaseDatabaseConfigured/);
+  assert.match(store, /from\("users"\)/);
+  assert.match(store, /from\("debates"\)/);
+  assert.match(store, /from\("scores"\)/);
 });
 
 test("starter preview references are removed", async () => {

@@ -9,6 +9,10 @@ import type {
   DebateTurn,
   ProfileStats,
 } from "./debate-types";
+import {
+  getSupabaseDatabaseClient,
+  isSupabaseDatabaseConfigured,
+} from "./supabase-server";
 
 export type StoredUser = ChatGPTUser & {
   createdAt: string;
@@ -49,6 +53,10 @@ let writeQueue = Promise.resolve();
 let activeStorePath = storePath;
 
 export async function getOrCreateUser(user: ChatGPTUser): Promise<StoredUser> {
+  if (isSupabaseDatabaseConfigured()) {
+    return getOrCreateSupabaseUser(user);
+  }
+
   return updateStore((store) => {
     const now = new Date().toISOString();
     const existing = store.users.find((item) => item.userId === user.userId);
@@ -68,6 +76,10 @@ export async function getOrCreateUser(user: ChatGPTUser): Promise<StoredUser> {
 }
 
 export async function getUserByEmail(email: string): Promise<StoredUser | null> {
+  if (isSupabaseDatabaseConfigured()) {
+    return getSupabaseUserByEmail(email);
+  }
+
   const store = await readStore();
   const normalizedEmail = email.trim().toLowerCase();
 
@@ -148,6 +160,10 @@ export async function createBotDebate({
   motion: string;
   side: DebateSide;
 }): Promise<DebateRecord> {
+  if (isSupabaseDatabaseConfigured()) {
+    return createSupabaseBotDebate({ userId, motion, side });
+  }
+
   return updateStore((store) => {
     const now = new Date().toISOString();
     const debate: DebateRecord = {
@@ -174,6 +190,10 @@ export async function addDebateTurn({
   speaker: DebateTurn["speaker"];
   content: string;
 }): Promise<DebateTurn> {
+  if (isSupabaseDatabaseConfigured()) {
+    return addSupabaseDebateTurn({ debateId, speaker, content });
+  }
+
   return updateStore((store) => {
     const debate = store.debates.find((item) => item.id === debateId);
     if (!debate) {
@@ -198,6 +218,10 @@ export async function getDebateForUser(
   debateId: string,
   userId: string,
 ): Promise<{ debate: DebateRecord; turns: DebateTurn[] }> {
+  if (isSupabaseDatabaseConfigured()) {
+    return getSupabaseDebateForUser(debateId, userId);
+  }
+
   const store = await readStore();
   const debate = store.debates.find(
     (item) => item.id === debateId && item.userId === userId,
@@ -224,6 +248,10 @@ export async function saveScore({
   userId: string;
   score: Omit<DebateScore, "id" | "debateId" | "userId" | "createdAt">;
 }): Promise<DebateScore> {
+  if (isSupabaseDatabaseConfigured()) {
+    return saveSupabaseScore({ debateId, userId, score });
+  }
+
   return updateStore((store) => {
     const debate = store.debates.find(
       (item) => item.id === debateId && item.userId === userId,
@@ -249,6 +277,10 @@ export async function saveScore({
 }
 
 export async function getProfileStats(userId: string): Promise<ProfileStats> {
+  if (isSupabaseDatabaseConfigured()) {
+    return getSupabaseProfileStats(userId);
+  }
+
   const store = await readStore();
   const debates = store.debates
     .filter((debate) => debate.userId === userId)
@@ -293,6 +325,300 @@ export async function getProfileStats(userId: string): Promise<ProfileStats> {
     weakestSkill,
     focusRecommendation: getFocusRecommendation(weakestSkill.label),
     recentArguments,
+  };
+}
+
+async function getOrCreateSupabaseUser(user: ChatGPTUser): Promise<StoredUser> {
+  const now = new Date().toISOString();
+  const payload = {
+    id: user.userId,
+    email: user.email,
+    display_name: user.displayName,
+    full_name: user.fullName,
+    updated_at: now,
+  };
+  const { data, error } = await getSupabaseDatabaseClient()
+    .from("users")
+    .upsert(payload, { onConflict: "id" })
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return mapSupabaseUser(data);
+}
+
+async function getSupabaseUserByEmail(
+  email: string,
+): Promise<StoredUser | null> {
+  const normalizedEmail = email.trim().toLowerCase();
+  const { data, error } = await getSupabaseDatabaseClient()
+    .from("users")
+    .select()
+    .eq("email", normalizedEmail)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  return data ? mapSupabaseUser(data) : null;
+}
+
+async function createSupabaseBotDebate({
+  userId,
+  motion,
+  side,
+}: {
+  userId: string;
+  motion: string;
+  side: DebateSide;
+}): Promise<DebateRecord> {
+  const now = new Date().toISOString();
+  const payload = {
+    id: crypto.randomUUID(),
+    user_id: userId,
+    mode: "bot",
+    motion,
+    side,
+    status: "active",
+    created_at: now,
+    updated_at: now,
+  };
+  const { data, error } = await getSupabaseDatabaseClient()
+    .from("debates")
+    .insert(payload)
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return mapSupabaseDebate(data);
+}
+
+async function addSupabaseDebateTurn({
+  debateId,
+  speaker,
+  content,
+}: {
+  debateId: string;
+  speaker: DebateTurn["speaker"];
+  content: string;
+}): Promise<DebateTurn> {
+  const now = new Date().toISOString();
+  const client = getSupabaseDatabaseClient();
+  const { data, error } = await client
+    .from("debate_turns")
+    .insert({
+      id: crypto.randomUUID(),
+      debate_id: debateId,
+      speaker,
+      content,
+      created_at: now,
+    })
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+
+  await client
+    .from("debates")
+    .update({ updated_at: now })
+    .eq("id", debateId);
+
+  return mapSupabaseTurn(data);
+}
+
+async function getSupabaseDebateForUser(
+  debateId: string,
+  userId: string,
+): Promise<{ debate: DebateRecord; turns: DebateTurn[] }> {
+  const client = getSupabaseDatabaseClient();
+  const { data: debateData, error: debateError } = await client
+    .from("debates")
+    .select()
+    .eq("id", debateId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (debateError) throw new Error(debateError.message);
+  if (!debateData) throw new Error("Debate not found.");
+
+  const { data: turnData, error: turnError } = await client
+    .from("debate_turns")
+    .select()
+    .eq("debate_id", debateId)
+    .order("created_at", { ascending: true });
+
+  if (turnError) throw new Error(turnError.message);
+
+  return {
+    debate: mapSupabaseDebate(debateData),
+    turns: (turnData ?? []).map(mapSupabaseTurn),
+  };
+}
+
+async function saveSupabaseScore({
+  debateId,
+  userId,
+  score,
+}: {
+  debateId: string;
+  userId: string;
+  score: Omit<DebateScore, "id" | "debateId" | "userId" | "createdAt">;
+}): Promise<DebateScore> {
+  const now = new Date().toISOString();
+  const client = getSupabaseDatabaseClient();
+  const { data: debateData, error: debateError } = await client
+    .from("debates")
+    .select("id")
+    .eq("id", debateId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (debateError) throw new Error(debateError.message);
+  if (!debateData) throw new Error("Debate not found.");
+
+  await client.from("scores").delete().eq("debate_id", debateId);
+  const { data, error } = await client
+    .from("scores")
+    .insert({
+      id: crypto.randomUUID(),
+      debate_id: debateId,
+      user_id: userId,
+      structure: score.structure,
+      logic: score.logic,
+      evidence: score.evidence,
+      rebuttal: score.rebuttal,
+      speaking_style: score.speakingStyle,
+      overall: score.overall,
+      rank: score.rank,
+      feedback: score.feedback,
+      created_at: now,
+    })
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+
+  await client
+    .from("debates")
+    .update({ status: "judged", updated_at: now })
+    .eq("id", debateId);
+
+  return mapSupabaseScore(data);
+}
+
+async function getSupabaseProfileStats(userId: string): Promise<ProfileStats> {
+  const client = getSupabaseDatabaseClient();
+  const [
+    { data: debateData, error: debateError },
+    { data: scoreData, error: scoreError },
+    { data: turnData, error: turnError },
+  ] = await Promise.all([
+    client
+      .from("debates")
+      .select()
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false }),
+    client
+      .from("scores")
+      .select()
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false }),
+    client
+      .from("debate_turns")
+      .select("id, debate_id, content, created_at, debates!inner(motion, user_id)")
+      .eq("speaker", "user")
+      .eq("debates.user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(3),
+  ]);
+
+  if (debateError) throw new Error(debateError.message);
+  if (scoreError) throw new Error(scoreError.message);
+  if (turnError) throw new Error(turnError.message);
+
+  const debates = (debateData ?? []).map(mapSupabaseDebate);
+  const scores = (scoreData ?? []).map(mapSupabaseScore);
+  const averageScore = scores.length
+    ? Math.round(scores.reduce((sum, score) => sum + score.overall, 0) / scores.length)
+    : null;
+  const weakestSkill = getWeakestSkill(scores);
+
+  return {
+    debateCount: debates.length,
+    averageScore,
+    currentRank: scores[0]?.rank ?? "Unranked",
+    latestDebate: debates[0] ?? null,
+    latestScore: scores[0] ?? null,
+    scoreHistory: scores.slice(0, 5),
+    improvementTrend: getImprovementTrend(scores),
+    weakestSkill,
+    focusRecommendation: getFocusRecommendation(weakestSkill.label),
+    recentArguments: (turnData ?? []).map((turn) => ({
+      id: String(turn.id),
+      motion: getJoinedDebateMotion(turn),
+      content: String(turn.content),
+      createdAt: String(turn.created_at),
+    })),
+  };
+}
+
+function getJoinedDebateMotion(turn: { debates?: unknown }): string {
+  const debate = Array.isArray(turn.debates) ? turn.debates[0] : turn.debates;
+  return typeof debate === "object" && debate !== null && "motion" in debate
+    ? String(debate.motion)
+    : "Saved debate";
+}
+
+function mapSupabaseUser(row: Record<string, unknown>): StoredUser {
+  const displayName = String(row.display_name ?? row.email ?? "Debater");
+  return {
+    userId: String(row.id),
+    email: String(row.email),
+    displayName,
+    fullName: row.full_name ? String(row.full_name) : displayName,
+    createdAt: String(row.created_at),
+    updatedAt: String(row.updated_at),
+  };
+}
+
+function mapSupabaseDebate(row: Record<string, unknown>): DebateRecord {
+  return {
+    id: String(row.id),
+    userId: String(row.user_id),
+    mode: row.mode === "friend" ? "friend" : "bot",
+    motion: String(row.motion),
+    side: row.side === "against" ? "against" : "for",
+    status:
+      row.status === "draft" || row.status === "judged"
+        ? row.status
+        : "active",
+    createdAt: String(row.created_at),
+    updatedAt: String(row.updated_at),
+  };
+}
+
+function mapSupabaseTurn(row: Record<string, unknown>): DebateTurn {
+  return {
+    id: String(row.id),
+    debateId: String(row.debate_id),
+    speaker: row.speaker === "bot" ? "bot" : "user",
+    content: String(row.content),
+    createdAt: String(row.created_at),
+  };
+}
+
+function mapSupabaseScore(row: Record<string, unknown>): DebateScore {
+  return {
+    id: String(row.id),
+    debateId: String(row.debate_id),
+    userId: String(row.user_id),
+    structure: Number(row.structure),
+    logic: Number(row.logic),
+    evidence: Number(row.evidence),
+    rebuttal: Number(row.rebuttal),
+    speakingStyle: Number(row.speaking_style),
+    overall: Number(row.overall),
+    rank: String(row.rank),
+    feedback: String(row.feedback),
+    createdAt: String(row.created_at),
   };
 }
 

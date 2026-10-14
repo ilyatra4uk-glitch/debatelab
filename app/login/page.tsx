@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SiteShell } from "../SiteShell";
 
 type LoginResponse = {
+  emailSent?: boolean;
   expiresAt?: string;
   magicLink?: string;
   message?: string;
@@ -34,13 +35,17 @@ export default function LoginPage() {
       });
       const data = (await response.json()) as LoginResponse;
 
-      if (!response.ok || data.error || !data.magicLink || !data.expiresAt) {
+      if (!response.ok || data.error || (!data.emailSent && (!data.magicLink || !data.expiresAt))) {
         throw new Error(data.error ?? "Could not create magic link.");
       }
 
-      setMagicLink(data.magicLink);
-      setExpiresAt(data.expiresAt);
-      setStatus("Magic link ready. Open it on this device to log in.");
+      if (data.emailSent) {
+        setStatus("Check your email for your DebateLab magic link.");
+      } else {
+        setMagicLink(data.magicLink ?? "");
+        setExpiresAt(data.expiresAt ?? "");
+        setStatus("Magic link ready. Open it on this device to log in.");
+      }
     } catch (caught) {
       setError(
         caught instanceof Error ? caught.message : "Could not create magic link.",
@@ -59,9 +64,8 @@ export default function LoginPage() {
           <h2>Email yourself a sign-in link</h2>
         </div>
         <p className="tool-copy">
-          For the free prototype, DebateLab shows the link here instead of
-          sending email. Later we can plug in an email sender without changing
-          how accounts work.
+          In production, DebateLab sends this link by email. If email is not
+          configured yet, the free prototype shows the link here so you can test.
         </p>
         <form className="register-form" onSubmit={submitLogin}>
           <label className="debate-field">

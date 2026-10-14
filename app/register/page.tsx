@@ -14,6 +14,7 @@ const focusAreas = [
 type TrainingMode = "focused" | "test";
 
 type RegisterResponse = {
+  emailSent?: boolean;
   user?: {
     displayName: string;
     email: string;
@@ -54,16 +55,20 @@ export default function RegisterPage() {
         throw new Error(data.error ?? "Could not create profile.");
       }
 
-      window.localStorage.setItem(
-        "debateLabRegistration",
-        JSON.stringify({ ...data.user, level, trainingMode, focusArea }),
-      );
-      setStatus("Profile created. Opening your dashboard...");
-      const nextPath =
-        trainingMode === "test"
-          ? "/debate-bot?mode=test"
-          : `/debate-bot?focus=${encodeURIComponent(focusArea)}`;
-      window.location.href = nextPath;
+      if (data.emailSent) {
+        setStatus("Profile created. Check your email for your DebateLab magic link.");
+      } else {
+        window.localStorage.setItem(
+          "debateLabRegistration",
+          JSON.stringify({ ...data.user, level, trainingMode, focusArea }),
+        );
+        setStatus("Profile created. Opening your dashboard...");
+        const nextPath =
+          trainingMode === "test"
+            ? "/debate-bot?mode=test"
+            : `/debate-bot?focus=${encodeURIComponent(focusArea)}`;
+        window.location.href = nextPath;
+      }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not create profile.");
       setStatus("");
