@@ -33,8 +33,8 @@ export default async function Home() {
 
   return (
     <SiteShell>
-      <div className="page-heading"><div><p className="eyebrow">Your workspace</p><h1>Overview</h1><p>Track your practice and build a stronger argument.</p></div><a className="primary-link-action" href="/debate-bot">Start a debate →</a></div>
-      <Link className="journal-link" href="/practices">View all my practices and continue a round →</Link>
+      <div className="page-heading"><div><p className="eyebrow">Your workspace</p><h1>Overview</h1><p>Track your practice and build a stronger argument.</p></div><a className="primary-link-action" href="/debate-bot">Start a debate</a></div>
+      <Link className="journal-link" href="/practices">View all my practices and continue a round</Link>
       <section className="dashboard-grid" aria-label="Profile dashboard">
         <article className="profile-panel">
           <div className="avatar" aria-hidden="true">
@@ -83,7 +83,7 @@ export default async function Home() {
             {stats.latestScore?.feedback ??
               "Complete a bot debate and judge it to build your score history."}
           </p>
-          <span className="history-open">{stats.latestScore ? "Open practice" : "View my practices"} →</span>
+          <span className="history-open">{stats.latestScore ? "Open practice" : "View my practices"}</span>
         </Link>
 
         <article className="progress-panel progress-chart-panel">

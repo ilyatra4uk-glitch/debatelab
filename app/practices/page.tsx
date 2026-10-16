@@ -32,7 +32,7 @@ export default async function PracticesPage() {
   return <SiteShell>
     <div className="page-heading">
       <div><p className="eyebrow">Your learning journal</p><h1>My practices</h1><p>Continue a round or revisit what you learned.</p></div>
-      <Link className="primary-link-action" href="/debate-bot">New practice →</Link>
+      <Link className="primary-link-action" href="/debate-bot">New practice</Link>
     </div>
     {!practices.length ? <section className="section-block empty-practices">
       <h2>Your first practice starts with one idea.</h2>
@@ -50,7 +50,7 @@ export default async function PracticesPage() {
             <td><Link href={`/practices/${debate.id}`} className="practice-topic">{debate.motion}<span>{debate.side === "for" ? "For" : "Against"} the motion · {speeches} of 3 speeches</span></Link></td>
             <td><span className={`practice-status ${score ? "is-complete" : ""}`}>{status}</span></td>
             <td><ScoreCell score={score} /></td>
-            <td><Link href={`/practices/${debate.id}`} className="practice-row-action">{action} →</Link></td>
+            <td><Link href={`/practices/${debate.id}`} className="practice-row-action">{action}</Link></td>
           </tr>;
         })}</tbody>
       </table>
