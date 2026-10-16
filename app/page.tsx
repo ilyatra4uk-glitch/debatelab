@@ -76,14 +76,15 @@ export default async function Home() {
           <span>Open videos</span>
         </a>
 
-        <article className="history-panel">
+        <Link className="history-panel history-link-panel" href={stats.latestScore ? `/practices/${stats.latestScore.debateId}` : "/practices"}>
           <p className="eyebrow">Latest result</p>
           <h2>{stats.latestScore ? `${stats.latestScore.overall}/100` : "No score yet"}</h2>
-          <p>
+          <p className="history-preview">
             {stats.latestScore?.feedback ??
               "Complete a bot debate and judge it to build your score history."}
           </p>
-        </article>
+          <span className="history-open">{stats.latestScore ? "Open practice" : "View my practices"} →</span>
+        </Link>
 
         <article className="progress-panel progress-chart-panel">
           <p className="eyebrow">Progress score</p>

@@ -59,6 +59,10 @@ p { margin-bottom:16px; }
 .home-link-panel span::after { content:' →'; }
 .history-panel h2 { color:var(--accent); font-size:28px; }
 .history-panel p:last-child,.progress-panel p:last-child,.arguments-panel>p:last-child { color:var(--muted); font-size:14px; margin-bottom:0; }
+.history-link-panel { color:var(--foreground); display:flex; flex-direction:column; text-decoration:none; transition:border-color .15s; }
+.history-link-panel:hover { border-color:var(--accent); }
+.history-preview { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; color:var(--muted); font-size:14px; margin-bottom:0; }
+.history-open { margin-top:auto; padding-top:12px; color:var(--accent); font-size:13px; font-weight:650; }
 .progress-panel h2 { font-size:22px; }
 .progress-chart-panel { display:grid; align-content:start; }
 .progress-chart { width:100%; height:auto; margin:6px 0 3px; overflow:visible; }
