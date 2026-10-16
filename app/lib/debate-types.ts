@@ -59,6 +59,12 @@ export type ProfileStats = {
     label: "Getting started" | "Weekly" | "Regular";
     activeDaysLast28: number;
   };
+  leaderboard: {
+    mostActive: { name: string; value: number };
+    mostConsistent: { name: string; value: number };
+    activityRank: number;
+    streakRank: number;
+  };
   currentRank: string;
   latestDebate: DebateRecord | null;
   latestScore: DebateScore | null;

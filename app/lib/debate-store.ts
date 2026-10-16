@@ -322,12 +322,14 @@ export async function getProfileStats(userId: string): Promise<ProfileStats> {
   const improvementTrend = getImprovementTrend(scores);
   const activity = getWeeklyActivity(debates);
   const gamification = getGamification(debates, scores, averageScore, improvementTrend.delta);
+  const leaderboard = getLeaderboard(store.users, store.debates, userId);
 
   return {
     debateCount: debates.length,
     averageScore,
     ...activity,
     ...gamification,
+    leaderboard,
     currentRank: scores[0]?.rank ?? "Unranked",
     latestDebate: debates[0] ?? null,
     latestScore: scores[0] ?? null,
@@ -521,11 +523,11 @@ async function getSupabaseProfileStats(userId: string): Promise<ProfileStats> {
     { data: debateData, error: debateError },
     { data: scoreData, error: scoreError },
     { data: turnData, error: turnError },
+    { data: userData, error: userError },
   ] = await Promise.all([
     client
       .from("debates")
       .select()
-      .eq("user_id", userId)
       .order("created_at", { ascending: false }),
     client
       .from("scores")
@@ -539,13 +541,16 @@ async function getSupabaseProfileStats(userId: string): Promise<ProfileStats> {
       .eq("debates.user_id", userId)
       .order("created_at", { ascending: false })
       .limit(3),
+    client.from("users").select("id,display_name"),
   ]);
 
   if (debateError) throw new Error(debateError.message);
   if (scoreError) throw new Error(scoreError.message);
   if (turnError) throw new Error(turnError.message);
+  if (userError) throw new Error(userError.message);
 
-  const debates = (debateData ?? []).map(mapSupabaseDebate);
+  const allDebates = (debateData ?? []).map(mapSupabaseDebate);
+  const debates = allDebates.filter((debate) => debate.userId === userId);
   const scores = (scoreData ?? []).map(mapSupabaseScore);
   const averageScore = scores.length
     ? Math.round(scores.reduce((sum, score) => sum + score.overall, 0) / scores.length)
@@ -554,12 +559,14 @@ async function getSupabaseProfileStats(userId: string): Promise<ProfileStats> {
   const activity = getWeeklyActivity(debates);
   const improvementTrend = getImprovementTrend(scores);
   const gamification = getGamification(debates, scores, averageScore, improvementTrend.delta);
+  const leaderboard = getLeaderboard((userData ?? []).map((row) => ({ userId: String(row.id), displayName: String(row.display_name ?? "Debater") })), allDebates, userId);
 
   return {
     debateCount: debates.length,
     averageScore,
     ...activity,
     ...gamification,
+    leaderboard,
     currentRank: scores[0]?.rank ?? "Unranked",
     latestDebate: debates[0] ?? null,
     latestScore: scores[0] ?? null,
@@ -575,6 +582,34 @@ async function getSupabaseProfileStats(userId: string): Promise<ProfileStats> {
       createdAt: String(turn.created_at),
     })),
   };
+}
+
+function getLeaderboard(users: Array<Pick<StoredUser, "userId" | "displayName">>, debates: DebateRecord[], userId: string): ProfileStats["leaderboard"] {
+  const rows = users.map((user) => {
+    const userDebates = debates.filter((debate) => debate.userId === user.userId);
+    return { userId: user.userId, name: user.displayName, practices: userDebates.length, streak: getBestStreak(userDebates) };
+  }).filter((row) => row.practices > 0);
+  const byPractices = [...rows].sort((a, b) => b.practices - a.practices || a.name.localeCompare(b.name));
+  const byStreak = [...rows].sort((a, b) => b.streak - a.streak || a.name.localeCompare(b.name));
+  const fallback = { name: "No ranking yet", value: 0 };
+  return {
+    mostActive: byPractices[0] ? { name: byPractices[0].name, value: byPractices[0].practices } : fallback,
+    mostConsistent: byStreak[0] ? { name: byStreak[0].name, value: byStreak[0].streak } : fallback,
+    activityRank: Math.max(1, byPractices.findIndex((row) => row.userId === userId) + 1),
+    streakRank: Math.max(1, byStreak.findIndex((row) => row.userId === userId) + 1),
+  };
+}
+
+function getBestStreak(debates: DebateRecord[]) {
+  const dates = [...new Set(debates.map((debate) => dateKeyInTimeZone(new Date(debate.createdAt), "Europe/Dublin")))].sort();
+  let best = 0; let current = 0; let previous = "";
+  for (const date of dates) {
+    const yesterday = new Date(`${date}T12:00:00Z`);
+    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+    current = previous === yesterday.toISOString().slice(0, 10) ? current + 1 : 1;
+    best = Math.max(best, current); previous = date;
+  }
+  return best;
 }
 
 function getProgressHistory(scores: DebateScore[], debates: DebateRecord[]): ProgressScore[] {

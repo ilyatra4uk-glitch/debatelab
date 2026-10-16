@@ -48,6 +48,12 @@ p { margin-bottom:18px; }
 .results-summary>div { display:grid; gap:2px; }
 .results-summary strong { color:var(--accent); font-size:34px; line-height:1; letter-spacing:-1.5px; }
 .results-summary span { color:var(--muted); font-size:12px; }
+.leaderboard-panel { display:grid; gap:12px; padding:26px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+.leaderboard-panel>div { display:grid; grid-template-columns:1fr auto; gap:2px 10px; }
+.leaderboard-panel>div span,.leaderboard-panel small,.leaderboard-panel>p:last-child { color:var(--muted); font-size:11px; }
+.leaderboard-panel strong { font-size:14px; }
+.leaderboard-panel small { text-align:right; }
+.leaderboard-panel>p:last-child { margin:2px 0 0; padding-top:12px; border-top:1px solid var(--line); }
 .streak-panel { grid-column:span 2; display:grid; grid-template-columns:1fr auto; align-items:center; gap:22px 30px; background:var(--accent-soft); }
 .streak-panel h2 { margin-bottom:6px; font-size:22px; }
 .streak-panel p:last-child { margin:0; color:var(--muted); font-size:13px; }
