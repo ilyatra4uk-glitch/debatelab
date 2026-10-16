@@ -6,7 +6,7 @@ import { useState } from "react";
 
 const navItems = [
   { href: "/", label: "Dashboard" },
-  { href: "/debate-bot", label: "Practice" },
+  { href: "/practice", label: "Practice" },
   { href: "/compete", label: "Compete" },
   { href: "/videos", label: "Learn" },
 ];
@@ -37,6 +37,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
           <nav className="top-nav" aria-label="Main navigation">
             {navItems.map((item) => <Link aria-current={(pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href + "/"))) ? "page" : undefined} href={item.href} key={item.href}>{item.label}</Link>)}
           </nav>
+          <Link className="profile-nav-link" href="/profile">Profile</Link>
           <button className="signout-button" disabled={isLeaving} onClick={signOut}>{isLeaving ? "Signing out…" : "Sign out"}</button>
         </div>
       </header>

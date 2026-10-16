@@ -25,6 +25,9 @@ p { margin-bottom:18px; }
 .top-nav a:hover { color:var(--accent); }
 .top-nav a[aria-current=page] { color:var(--accent); border-bottom-color:var(--accent); }
 .signout-button { margin-left:auto; border:1px solid var(--line); background:#fff; border-radius:8px; padding:8px 15px; font-size:13px; color:#4b4c68; white-space:nowrap; }
+.profile-nav-link { margin-left:auto; color:var(--muted); font-size:13px; font-weight:650; text-decoration:none; }
+.profile-nav-link:hover { color:var(--accent); }
+.profile-nav-link+.signout-button { margin-left:0; }
 .app-content { max-width:1200px; padding:44px 32px 72px; margin:auto; }
 .page-heading { margin-bottom:18px; }
 .page-heading p:last-child { color:var(--muted); margin:0; }
@@ -40,6 +43,11 @@ p { margin-bottom:18px; }
 .avatar { flex-shrink:0; display:grid; place-items:center; width:58px; height:58px; border-radius:18px; background:#e8e9ff; color:var(--accent); font-size:20px; font-weight:700; }
 .stat-panel { display:grid; align-content:space-between; min-height:154px; }
 .stat-panel strong { font-size:44px; line-height:1.2; font-weight:650; letter-spacing:-2px; }
+.results-summary { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; align-content:start; padding:26px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+.results-summary .eyebrow { grid-column:1/-1; }
+.results-summary>div { display:grid; gap:2px; }
+.results-summary strong { color:var(--accent); font-size:34px; line-height:1; letter-spacing:-1.5px; }
+.results-summary span { color:var(--muted); font-size:12px; }
 .streak-panel { grid-column:span 2; display:grid; grid-template-columns:1fr auto; align-items:center; gap:22px 30px; background:var(--accent-soft); }
 .streak-panel h2 { margin-bottom:6px; font-size:22px; }
 .streak-panel p:last-child { margin:0; color:var(--muted); font-size:13px; }
@@ -69,6 +77,8 @@ p { margin-bottom:18px; }
 .progress-chart line { stroke:var(--accent-line); stroke-width:1; }
 .progress-chart polyline { fill:none; stroke:var(--accent); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
 .progress-chart circle { fill:var(--accent); stroke:#fff; stroke-width:2; }
+.chart-labels { display:flex; justify-content:space-between; gap:5px; margin:0 2px 10px; overflow:hidden; }
+.chart-labels span { min-width:0; color:var(--muted); font-size:9px; white-space:nowrap; }
 .arguments-panel { grid-column:1/-1; }
 .argument-list { display:grid; gap:14px; }
 .argument-list section { border-top:1px solid var(--line); padding-top:18px; }
@@ -228,3 +238,15 @@ summary { cursor:pointer; color:var(--accent); font-weight:600; }
 .practice-main .round-complete { text-align:left; }
 @media(max-width:900px) { .practice-layout { grid-template-columns:1fr; } .practice-sidebar { position:static; grid-template-columns:repeat(2,minmax(0,1fr)); } .practice-sidebar .back-link,.practice-sidebar>div:first-of-type { grid-column:1/-1; } .practice-steps { grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; } .practice-steps li { align-items:flex-start; flex-direction:column; font-size:11px; } .practice-meta { grid-template-columns:repeat(3,minmax(0,1fr)); } }
 @media(max-width:620px) { .top-nav { gap:20px; overflow-x:auto; } .top-nav a { white-space:nowrap; font-size:12px; } .topic-filters { grid-template-columns:1fr; } .practice-table th,.practice-table td { padding-left:14px; padding-right:14px; } .round-progress { gap:6px; } .round-progress li { flex-direction:column; text-align:center; font-size:10px; } .topic-library select[size] { font-size:12px; } .empty-practices { padding:28px; } }
+
+.profile-settings { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; max-width:900px; }
+.profile-settings .section-block { display:grid; gap:16px; align-content:start; }
+.profile-settings .section-block>p,.profile-settings h1,.profile-settings h2 { margin-bottom:0; }
+.mode-picker { display:grid; gap:28px; max-width:900px; }
+.mode-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
+.mode-card { display:flex; min-height:220px; flex-direction:column; padding:26px; border:1px solid var(--line); border-radius:14px; background:#fff; color:var(--foreground); text-decoration:none; }
+.mode-card:hover { border-color:var(--accent); }
+.mode-card p { color:var(--muted); font-size:14px; }
+.mode-card span { margin-top:auto; color:var(--accent); font-size:13px; font-weight:700; }
+.mode-card.is-coming { background:#f5f5ff; }
+@media(max-width:620px) { .profile-settings,.mode-grid { grid-template-columns:1fr; } .profile-nav-link { margin-left:auto; } }

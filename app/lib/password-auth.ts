@@ -71,6 +71,27 @@ export async function getPasswordSessionUser(sessionId: string): Promise<ChatGPT
   return mapUser(user as PasswordUserRow);
 }
 
+export async function updatePasswordAccount({ userId, currentPassword, newPassword }: { userId: string; currentPassword: string; newPassword: string }) {
+  requireDatabase();
+  const client = getSupabaseDatabaseClient();
+  const { data, error } = await client.from("users").select("password_hash").eq("id", userId).maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data?.password_hash || !(await verifyPassword(currentPassword, data.password_hash))) throw new Error("Your current password is incorrect.");
+  const validationError = validatePassword(newPassword);
+  if (validationError) throw new Error(validationError);
+  const { error: updateError } = await client.from("users").update({ password_hash: await hashPassword(newPassword), updated_at: new Date().toISOString() }).eq("id", userId);
+  if (updateError) throw new Error(updateError.message);
+}
+
+export async function updatePasswordAccountName({ userId, fullName }: { userId: string; fullName: string }) {
+  requireDatabase();
+  const name = fullName.trim();
+  if (name.length < 2 || name.length > 80) throw new Error("Enter a name between 2 and 80 characters.");
+  const { error } = await getSupabaseDatabaseClient().from("users").update({ display_name: name, full_name: name, updated_at: new Date().toISOString() }).eq("id", userId);
+  if (error) throw new Error(error.message);
+  return name;
+}
+
 function mapUser(row: PasswordUserRow): ChatGPTUser { return { userId: row.id, email: row.email, displayName: row.display_name, fullName: row.full_name || row.display_name }; }
 async function hashPassword(password: string) {
   const salt = randomBytes(16);
