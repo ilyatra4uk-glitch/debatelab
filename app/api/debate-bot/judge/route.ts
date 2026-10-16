@@ -1,7 +1,7 @@
 import { DebateAIError, judgeDebate } from "@/app/lib/debate-ai";
 import { getCurrentUserState } from "@/app/lib/current-user";
 import {
-  getDebateForUser,
+  getPractice,
   getOrCreateUser,
   saveScore,
 } from "@/app/lib/debate-store";
@@ -27,7 +27,8 @@ export async function POST(request: Request) {
     }
 
     const user = await getOrCreateUser(authUser);
-    const { debate, turns } = await getDebateForUser(debateId, user.userId);
+    const { debate, turns, score: existing } = await getPractice(debateId, user.userId);
+    if (existing) return Response.json({ score: existing });
     const judged = await judgeDebate(debate, turns);
     const score = await saveScore({
       debateId: debate.id,

@@ -19,6 +19,9 @@ const SIGN_OUT_PATH = "/signout-with-chatgpt";
 const CALLBACK_PATH = "/callback";
 
 export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
+  // Identity headers are trustworthy only behind a platform that strips client values.
+  // Password-based Vercel deployments must never accept client-supplied identity.
+  if (process.env.DEBATELAB_TRUST_CHATGPT_HEADERS !== "true") return null;
   const requestHeaders = await headers();
   const userId = requestHeaders.get(USER_ID_HEADER);
   const email = requestHeaders.get(USER_EMAIL_HEADER);

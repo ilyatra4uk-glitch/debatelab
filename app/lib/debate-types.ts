@@ -57,3 +57,23 @@ export type ProfileStats = {
     createdAt: string;
   }>;
 };
+
+export type PracticeRevision = {
+  id: string;
+  debateId: string;
+  turnId: string;
+  content: string;
+  feedback: string;
+  createdAt: string;
+};
+export type PracticeDetail = {
+  debate: DebateRecord;
+  turns: DebateTurn[];
+  score: DebateScore | null;
+  revisions: PracticeRevision[];
+};
+export type PracticeSummary = {
+  debate: DebateRecord;
+  speeches: number;
+  score: number | null;
+};

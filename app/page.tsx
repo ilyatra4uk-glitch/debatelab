@@ -1,6 +1,6 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SiteShell } from "./SiteShell";
-import { ProfileClientStats } from "./ProfileClientStats";
 import { getCurrentUserState } from "./lib/current-user";
 import { getOrCreateUser, getProfileStats } from "./lib/debate-store";
 
@@ -28,6 +28,7 @@ export default async function Home() {
   return (
     <SiteShell>
       <div className="page-heading"><div><p className="eyebrow">Your workspace</p><h1>Overview</h1><p>Track your practice and build a stronger argument.</p></div><a className="primary-link-action" href="/debate-bot">Start a debate →</a></div>
+      <Link className="journal-link" href="/practices">View all my practices and continue a round →</Link>
       <section className="dashboard-grid" aria-label="Profile dashboard">
         <article className="profile-panel">
           <div className="avatar" aria-hidden="true">
@@ -36,7 +37,7 @@ export default async function Home() {
           <div>
             <p className="eyebrow">Profile</p>
             <h2>{user.displayName}</h2>
-            <p>{stats.currentRank}</p>
+            <p>{stats.debateCount ? "Building your skills, one round at a time" : "Ready for your first round"}</p>
           </div>
         </article>
 
@@ -61,8 +62,6 @@ export default async function Home() {
               "Complete a bot debate and judge it to build your score history."}
           </p>
         </article>
-
-        <ProfileClientStats />
 
         <article className="progress-panel">
           <p className="eyebrow">Progress</p>

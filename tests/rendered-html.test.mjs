@@ -7,7 +7,7 @@ import test from 'node:test';
 test('authentication boundary and standalone account screens', async (t) => {
   const server = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'start', '-p', '0'], {
     cwd: new URL('..', import.meta.url),
-    env: { ...process.env, SUPABASE_URL: '', NEXT_PUBLIC_SUPABASE_URL: '', SUPABASE_SERVICE_ROLE_KEY: '', OPENAI_API_KEY: '' },
+    env: { ...process.env, DEBATELAB_TRUST_CHATGPT_HEADERS: '', SUPABASE_URL: '', NEXT_PUBLIC_SUPABASE_URL: '', SUPABASE_SERVICE_ROLE_KEY: '', OPENAI_API_KEY: '' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   t.after(async () => { server.kill(); await once(server, 'exit'); });
@@ -22,13 +22,20 @@ test('authentication boundary and standalone account screens', async (t) => {
     });
     server.stderr.on('data', chunk => { output += chunk; });
   });
-  for (const path of ['/', '/debate-bot', '/videos']) {
+  for (const path of ['/', '/debate-bot', '/videos', '/practices', '/practices/not-real']) {
     await t.test(`guest redirected from ${path}`, async () => {
       const response = await fetch(base + path, { redirect: 'manual' });
       assert.equal(response.status, 307);
       assert.equal(response.headers.get('location'), '/login');
     });
   }
+  await t.test('forged identity headers do not unlock a password deployment', async () => {
+    const response = await fetch(base + '/practices', { redirect: 'manual', headers: {
+      'oai-authenticated-user-id': 'forged-user', 'oai-authenticated-user-email': 'forged@test.invalid',
+    } });
+    assert.equal(response.status, 307);
+    assert.equal(response.headers.get('location'), '/login');
+  });
   for (const path of ['/login', '/register']) {
     await t.test(`${path} is a standalone account page`, async () => {
       const response = await fetch(base + path);

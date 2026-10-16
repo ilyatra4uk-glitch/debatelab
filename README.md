@@ -111,9 +111,34 @@ Both features call the OpenAI Responses API. There are no simulated replies
 or heuristic scores: missing configuration, API failures, refusals, and
 incomplete responses appear as errors. A bot response is generated before
 creating the saved debate, so an AI failure does not create an empty debate.
-Judging evaluates the saved opening exchange and validates all scores before
+Judging evaluates all three saved speeches and validates all scores before
 saving them. Speaking style measures written clarity, not audio delivery.
 
 Run `npm run test:ai` for isolated integration tests with mocked API responses.
 These tests do not require a key or make paid API calls. A live check requires
-registering/signing in, starting a bot debate, then choosing “Judge and rank me”.
+registering/signing in, starting a bot debate, completing all three speeches, then choosing “Get my feedback”.
+
+
+## Three-step practices
+
+Each practice contains opening, rebuttal and closing speeches, with an AI reply
+after each. The final reply closes the round. Feedback is available after all
+three speeches; rewrites have their own saved coach feedback and preserve the
+original round score. `/practices` lists the signed-in user's rounds and supports
+resuming unfinished rounds and reopening feedback.
+
+Apply `supabase/migrations/20261016_three_step_practices.sql` before deploying
+this version to another Supabase project. The migration adds turn ordering,
+saved rewrites with RLS, and a service-role-only transaction that saves each
+exchange with a stale-write check. Existing practices remain available.
+
+The topic library contains 50 original Irish secondary-school practice motions,
+with Junior/Senior suggestions, categories, search and random selection from the
+filtered results. It is informed by Educate Together, Concern Debates and
+Trinity's Debating Science Issues; it is not an official or frequency-ranked list.
+Sources are linked in the library. `npm test` includes the full practice flow
+against an isolated temporary file store and test-only mocked AI responses.
+
+Password deployments do not trust incoming ChatGPT identity headers. Only a
+hosting platform that strips client-supplied identity headers may explicitly
+set `DEBATELAB_TRUST_CHATGPT_HEADERS=true`. Do not enable this on Vercel.

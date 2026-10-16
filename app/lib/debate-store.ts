@@ -8,6 +8,9 @@ import type {
   DebateSide,
   DebateTurn,
   ProfileStats,
+  PracticeDetail,
+  PracticeSummary,
+  PracticeRevision,
 } from "./debate-types";
 import {
   getSupabaseDatabaseClient,
@@ -25,6 +28,7 @@ type StoreData = {
   turns: DebateTurn[];
   scores: DebateScore[];
   magicLinks: MagicLoginToken[];
+  revisions: PracticeRevision[];
 };
 
 type MagicLoginToken = {
@@ -42,6 +46,7 @@ const emptyStore: StoreData = {
   turns: [],
   scores: [],
   magicLinks: [],
+  revisions: [],
 };
 
 const storePath =
@@ -443,7 +448,7 @@ async function getSupabaseDebateForUser(
     .from("debate_turns")
     .select()
     .eq("debate_id", debateId)
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: true }).order("position", { ascending: true });
 
   if (turnError) throw new Error(turnError.message);
 
@@ -474,10 +479,9 @@ async function saveSupabaseScore({
   if (debateError) throw new Error(debateError.message);
   if (!debateData) throw new Error("Debate not found.");
 
-  await client.from("scores").delete().eq("debate_id", debateId);
   const { data, error } = await client
     .from("scores")
-    .insert({
+    .upsert({
       id: crypto.randomUUID(),
       debate_id: debateId,
       user_id: userId,
@@ -490,7 +494,7 @@ async function saveSupabaseScore({
       rank: score.rank,
       feedback: score.feedback,
       created_at: now,
-    })
+    }, { onConflict: "debate_id" })
     .select()
     .single();
 
@@ -728,4 +732,84 @@ function isReadOnlyFileSystem(error: unknown): boolean {
     ((error as NodeJS.ErrnoException).code === "EROFS" ||
       (error as NodeJS.ErrnoException).code === "EACCES")
   );
+}
+
+
+export async function getPractice(debateId: string, userId: string): Promise<PracticeDetail> {
+  const detail = await getDebateForUser(debateId, userId);
+  if (isSupabaseDatabaseConfigured()) {
+    const client = getSupabaseDatabaseClient();
+    const [scores, revisions] = await Promise.all([
+      client.from("scores").select().eq("debate_id", debateId).eq("user_id", userId).maybeSingle(),
+      client.from("practice_revisions").select().eq("debate_id", debateId).order("created_at"),
+    ]);
+    if (scores.error) throw new Error(scores.error.message);
+    if (revisions.error) throw new Error(revisions.error.message);
+    return { ...detail, score: scores.data ? mapSupabaseScore(scores.data) : null,
+      revisions: (revisions.data ?? []).map((row) => ({ id: row.id, debateId: row.debate_id, turnId: row.turn_id, content: row.content, feedback: row.feedback, createdAt: row.created_at })) };
+  }
+  const store = await readStore();
+  return { ...detail, score: store.scores.find((score) => score.debateId === debateId && score.userId === userId) ?? null,
+    revisions: store.revisions.filter((revision) => revision.debateId === debateId) };
+}
+
+export async function listPractices(userId: string): Promise<PracticeSummary[]> {
+  if (isSupabaseDatabaseConfigured()) {
+    const { data, error } = await getSupabaseDatabaseClient().from("debates")
+      .select("*, debate_turns(speaker), scores(overall)").eq("user_id", userId).order("updated_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((row) => ({ debate: mapSupabaseDebate(row),
+      speeches: row.debate_turns.filter((turn: { speaker: string }) => turn.speaker === "user").length,
+      score: row.scores[0]?.overall ?? null }));
+  }
+  const store = await readStore();
+  return store.debates.filter((debate) => debate.userId === userId)
+    .sort((a,b) => b.updatedAt.localeCompare(a.updatedAt)).map((debate) => ({ debate,
+      speeches: store.turns.filter((turn) => turn.debateId === debate.id && turn.speaker === "user").length,
+      score: store.scores.find((score) => score.debateId === debate.id)?.overall ?? null }));
+}
+
+export async function savePracticeExchange(input: {
+  userId: string; debateId?: string; motion: string; side: DebateSide;
+  expectedTurns: number; argument: string; reply: string;
+}): Promise<PracticeDetail> {
+  let debateId: string;
+  if (isSupabaseDatabaseConfigured()) {
+    const { data, error } = await getSupabaseDatabaseClient().rpc("save_practice_exchange", {
+      p_user_id: input.userId, p_debate_id: input.debateId ?? null, p_motion: input.motion,
+      p_side: input.side, p_expected_turns: input.expectedTurns, p_argument: input.argument, p_reply: input.reply,
+    });
+    if (error) throw new Error(error.message);
+    debateId = String(data);
+  } else {
+    debateId = await updateStore((store) => {
+      const now = new Date().toISOString();
+      let debate = input.debateId ? store.debates.find((item) => item.id === input.debateId && item.userId === input.userId) : undefined;
+      if (input.debateId && !debate) throw new Error("Practice not found.");
+      const count = debate ? store.turns.filter((turn) => turn.debateId === input.debateId).length : 0;
+      if (count !== input.expectedTurns || count >= 6 || count % 2 || debate?.status === "judged") throw new Error("Practice changed. Reload and try again.");
+      if (!debate) {
+        debate = { id: crypto.randomUUID(), userId: input.userId, motion: input.motion, side: input.side,
+          mode: "bot", status: "active", createdAt: now, updatedAt: now };
+        store.debates.push(debate);
+      }
+      debate.updatedAt = now;
+      store.turns.push({ id: crypto.randomUUID(), debateId: debate.id, speaker: "user", content: input.argument, createdAt: now },
+        { id: crypto.randomUUID(), debateId: debate.id, speaker: "bot", content: input.reply, createdAt: now });
+      return debate.id;
+    });
+  }
+  return getPractice(debateId, input.userId);
+}
+
+export async function savePracticeRevision(userId: string, input: Omit<PracticeRevision, "id" | "createdAt">): Promise<PracticeRevision> {
+  const detail = await getPractice(input.debateId, userId);
+  if (!detail.score || !detail.turns.some((turn) => turn.id === input.turnId && turn.speaker === "user")) throw new Error("Finish the practice before improving a speech.");
+  const revision = { ...input, id: crypto.randomUUID(), createdAt: new Date().toISOString() };
+  if (isSupabaseDatabaseConfigured()) {
+    const { error } = await getSupabaseDatabaseClient().from("practice_revisions").insert({ id: revision.id,
+      debate_id: input.debateId, turn_id: input.turnId, content: input.content, feedback: input.feedback, created_at: revision.createdAt });
+    if (error) throw new Error(error.message);
+  } else await updateStore((store) => { store.revisions.push(revision); });
+  return revision;
 }

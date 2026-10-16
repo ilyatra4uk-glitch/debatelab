@@ -9,7 +9,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "next build && node --test tests/rendered-html.test.mjs tests/debate-ai.test.mjs",
+    "test": "next build && node --test tests/rendered-html.test.mjs tests/debate-ai.test.mjs tests/practice-flow.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .vercel",
     "db:generate": "drizzle-kit generate",
     "test:ai": "node --test tests/debate-ai.test.mjs"
