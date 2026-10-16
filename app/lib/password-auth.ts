@@ -11,7 +11,7 @@ type PasswordUserRow = { id: string; email: string; display_name: string; full_n
 
 export function normalizeLogin(value: string) { return value.trim().toLowerCase(); }
 export function validateLogin(login: string): string | null {
-  return /^[a-z0-9][a-z0-9._-]{2,31}$/.test(login) ? null : "Login must be 3–32 characters: letters, numbers, dot, dash, or underscore.";
+  return /^[a-z0-9][a-z0-9._-]{2,31}$/.test(login) ? null : "Username must be 3–32 characters: letters, numbers, dot, dash, or underscore.";
 }
 export function validatePassword(password: string): string | null {
   if (password.length < 8) return "Password must be at least 8 characters.";
@@ -25,7 +25,7 @@ export async function registerPasswordUser({ login, password, displayName }: { l
   const client = getSupabaseDatabaseClient();
   const { data: existing, error: findError } = await client.from("users").select("id").eq("login", normalizedLogin).maybeSingle();
   if (findError) throw new Error(findError.message);
-  if (existing) throw new Error("This login is already taken.");
+  if (existing) throw new Error("This username is already taken.");
   const now = new Date().toISOString();
   const { data, error } = await client.from("users").insert({
     id: `account:${crypto.randomUUID()}`,
@@ -38,7 +38,7 @@ export async function registerPasswordUser({ login, password, displayName }: { l
     updated_at: now,
   }).select().single();
   if (error) {
-    if (error.code === "23505") throw new Error("This login is already taken.");
+    if (error.code === "23505") throw new Error("This username is already taken.");
     throw new Error(error.message);
   }
   return mapUser(data as PasswordUserRow);
@@ -90,6 +90,30 @@ export async function updatePasswordAccountName({ userId, fullName }: { userId: 
   const { error } = await getSupabaseDatabaseClient().from("users").update({ display_name: name, full_name: name, updated_at: new Date().toISOString() }).eq("id", userId);
   if (error) throw new Error(error.message);
   return name;
+}
+
+export async function getPasswordAccountUsername(userId: string) {
+  if (!isSupabaseDatabaseConfigured() || !userId.startsWith("account:")) return null;
+  const { data, error } = await getSupabaseDatabaseClient().from("users").select("login").eq("id", userId).maybeSingle();
+  if (error) throw new Error(error.message);
+  return data?.login ? String(data.login) : null;
+}
+
+export async function updatePasswordAccountUsername({ userId, username }: { userId: string; username: string }) {
+  requireDatabase();
+  const normalizedUsername = normalizeLogin(username);
+  const validationError = validateLogin(normalizedUsername);
+  if (validationError) throw new Error(validationError);
+  const client = getSupabaseDatabaseClient();
+  const { data: existing, error: findError } = await client.from("users").select("id").eq("login", normalizedUsername).maybeSingle();
+  if (findError) throw new Error(findError.message);
+  if (existing && String(existing.id) !== userId) throw new Error("This username is already taken.");
+  const { error } = await client.from("users").update({ login: normalizedUsername, email: `${normalizedUsername}@${LOCAL_ACCOUNT_DOMAIN}`, updated_at: new Date().toISOString() }).eq("id", userId);
+  if (error) {
+    if (error.code === "23505") throw new Error("This username is already taken.");
+    throw new Error(error.message);
+  }
+  return normalizedUsername;
 }
 
 function mapUser(row: PasswordUserRow): ChatGPTUser { return { userId: row.id, email: row.email, displayName: row.display_name, fullName: row.full_name || row.display_name }; }

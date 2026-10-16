@@ -172,6 +172,11 @@ p { margin-bottom:18px; }
 .debate-field input,.debate-field textarea,.debate-field select { width:100%; min-width:0; border:1px solid #d9daea; border-radius:8px; background:#fff; color:var(--foreground); padding:11px 13px; font-weight:400; font-size:15px; line-height:1.5; }
 .debate-field textarea { min-height:180px; resize:vertical; }
 .debate-field input::placeholder,.debate-field textarea::placeholder { color:#98a3aa; }
+.username-field { display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; border:1px solid #d9daea; border-radius:8px; background:#fff; color:var(--muted); }
+.username-field:focus-within { border-color:var(--accent); outline:3px solid #a9abff; outline-offset:1px; }
+.username-field>span { padding-left:13px; font-size:15px; }
+.debate-field .username-field input { border:0; padding-left:4px; }
+.debate-field .username-field input:focus { outline:0; }
 .voice-box { display:grid; gap:10px; }
 .voice-box .secondary-action { justify-self:end; min-height:34px; padding:5px 12px; font-size:12px; }
 .voice-status { color:var(--accent); margin:0; font-size:14px; }
