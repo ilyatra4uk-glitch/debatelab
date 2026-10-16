@@ -47,13 +47,20 @@ p { margin-bottom:18px; }
 .dialog-mode-list span { font-size:13px; }
 .friends-ranking-dialog { position:relative; width:min(100%,620px); max-height:min(680px,calc(100vh - 48px)); overflow:auto; padding:28px; border:1px solid var(--line); border-radius:14px; background:#fff; box-shadow:0 20px 60px #17173535; }
 .friends-ranking-dialog h2 { margin-bottom:22px; }
+.scoreboard-description { margin:-14px 0 22px; color:var(--muted); font-size:13px; }
 .friends-ranking-list { display:grid; gap:12px; padding:0; margin:0; list-style:none; }
-.friends-ranking-list li { display:grid; grid-template-columns:48px minmax(0,1fr) auto; align-items:center; gap:14px; padding:16px; border:1px solid var(--line); border-radius:10px; background:#fff; }
-.friends-rank-number { color:var(--accent); font-size:24px; font-weight:750; letter-spacing:-1px; }
+.friends-ranking-list li { display:grid; grid-template-columns:38px minmax(0,1fr) auto; align-items:center; column-gap:14px; row-gap:10px; padding:16px; border:1px solid var(--line); border-radius:10px; background:#fff; }
+.friends-ranking-list li.is-you { border-color:var(--accent); background:var(--accent-soft); }
+.friends-rank-number { display:grid; place-items:center; width:34px; height:34px; border-radius:50%; background:var(--accent-soft); color:var(--accent); font-size:15px; font-weight:750; }
+.friends-ranking-list li:nth-child(1) .friends-rank-number { background:#fff2bd; color:#8a6811; }
+.friends-ranking-list li:nth-child(2) .friends-rank-number { background:#edf0f7; color:#5d6779; }
+.friends-ranking-list li:nth-child(3) .friends-rank-number { background:#f9e7d6; color:#925c31; }
 .friends-rank-person { display:grid; gap:2px; }
 .friends-rank-person strong { font-size:15px; }
 .friends-rank-person span,.friends-rank-stats { color:var(--muted); font-size:12px; }
-.friends-rank-stats { display:flex; justify-content:end; gap:10px; text-align:right; white-space:nowrap; }
+.friends-rank-score { color:var(--accent); font-size:28px; line-height:1; letter-spacing:-1px; }
+.friends-rank-score small { color:var(--muted); font-size:10px; font-weight:650; letter-spacing:0; }
+.friends-rank-stats { grid-column:2/-1; display:flex; gap:12px; }
 .app-content { max-width:1200px; padding:44px 32px 72px; margin:auto; }
 .page-heading { margin-bottom:18px; }
 .page-heading p:last-child { color:var(--muted); margin:0; }
