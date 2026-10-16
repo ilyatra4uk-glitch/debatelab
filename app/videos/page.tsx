@@ -6,7 +6,6 @@ export default function VideosPage() {
     <SiteShell>
       <section className="section-block">
         <div className="section-title">
-          <p className="eyebrow">Learn</p>
           <h2>Debate videos</h2>
         </div>
         <div className="topic-video-list">
