@@ -62,11 +62,11 @@ p { margin-bottom:18px; }
 .streak-panel { grid-column:span 2; display:grid; grid-template-columns:1fr auto; align-items:center; gap:22px 30px; background:var(--accent-soft); }
 .streak-panel h2 { margin-bottom:6px; font-size:22px; }
 .streak-panel p:last-child { margin:0; color:var(--muted); font-size:13px; }
-.level-summary { display:flex; gap:20px; padding-left:22px; border-left:1px solid var(--accent-line); }
+.level-summary { display:flex; align-self:start; gap:20px; padding-left:22px; border-left:1px solid var(--accent-line); }
 .level-summary>div { display:grid; gap:2px; }
 .level-summary .eyebrow { margin:0; font-size:10px; }
 .level-summary strong { color:var(--accent); font-size:17px; line-height:1.25; }
-.level-summary span { color:var(--muted); font-size:11px; }
+.level-summary span { margin-top:2px; color:var(--muted); font-size:11px; }
 .week-activity { display:flex; gap:10px; margin:0; padding:0; list-style:none; }
 .week-activity li { display:grid; justify-items:center; gap:4px; color:var(--muted); font-size:11px; font-weight:600; }
 .week-activity span { display:grid; place-items:center; width:28px; height:28px; border:1px solid var(--accent-line); border-radius:50%; background:#fff; color:#fff; font-size:14px; }
