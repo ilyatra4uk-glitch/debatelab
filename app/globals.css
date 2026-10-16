@@ -26,10 +26,10 @@ p { margin-bottom:18px; }
 .top-nav a[aria-current=page] { color:var(--accent); border-bottom-color:var(--accent); }
 .signout-button { margin-left:auto; border:1px solid var(--line); background:#fff; border-radius:8px; padding:8px 15px; font-size:13px; color:#4b4c68; white-space:nowrap; }
 .account-menu { position:relative; margin-left:auto; }
-.account-button { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:8px; background:#fff; color:#4b4c68; padding:7px 11px 7px 8px; font-size:13px; font-weight:650; }
-.account-button:hover,.account-button[aria-expanded=true] { border-color:var(--accent-line); color:var(--accent); }
-.account-icon { display:grid; place-items:center; width:22px; height:22px; border-radius:50%; background:var(--accent-soft); color:var(--accent); }
-.account-icon svg { width:15px; height:15px; fill:none; stroke:currentColor; stroke-linecap:round; stroke-width:1.8; }
+.account-button { display:grid; place-items:center; width:34px; height:34px; padding:0; border:0; border-radius:50%; background:transparent; color:#4b4c68; }
+.account-button:hover,.account-button[aria-expanded=true] { background:var(--accent-soft); color:var(--accent); }
+.account-icon { display:grid; place-items:center; width:28px; height:28px; border:1px solid var(--line); border-radius:50%; background:#fff; color:inherit; }
+.account-icon svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-linecap:round; stroke-width:1.8; }
 .account-popover { position:absolute; z-index:5; right:0; top:calc(100% + 8px); display:grid; min-width:150px; padding:6px; border:1px solid var(--line); border-radius:10px; background:#fff; box-shadow:0 12px 28px #17173518; }
 .account-popover a,.account-popover button { border:0; border-radius:6px; background:transparent; color:var(--foreground); padding:8px 10px; text-align:left; text-decoration:none; font-size:13px; }
 .account-popover a:hover,.account-popover button:hover { background:var(--accent-soft); color:var(--accent); }
@@ -54,10 +54,10 @@ p { margin-bottom:18px; }
 .results-summary strong { color:var(--accent); font-size:34px; line-height:1; letter-spacing:-1.5px; }
 .results-summary span { color:var(--muted); font-size:12px; }
 .leaderboard-panel { display:grid; gap:12px; padding:26px; border:1px solid var(--line); border-radius:12px; background:#fff; }
-.leaderboard-panel>div { display:grid; grid-template-columns:1fr auto; gap:2px 10px; }
-.leaderboard-panel>div span,.leaderboard-panel small,.leaderboard-panel>p:last-child { color:var(--muted); font-size:11px; }
-.leaderboard-panel strong { font-size:14px; }
-.leaderboard-panel small { text-align:right; }
+.ranking-metrics { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.ranking-metrics>div { display:grid; gap:3px; }
+.ranking-metrics span,.leaderboard-panel>p:last-child { color:var(--muted); font-size:11px; }
+.ranking-metrics strong { color:var(--accent); font-size:30px; line-height:1; letter-spacing:-1px; }
 .leaderboard-panel>p:last-child { margin:2px 0 0; padding-top:12px; border-top:1px solid var(--line); }
 .streak-panel { grid-column:span 2; display:grid; grid-template-columns:1fr auto; align-items:center; gap:22px 30px; background:var(--accent-soft); }
 .streak-panel h2 { margin-bottom:6px; font-size:22px; }
