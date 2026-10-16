@@ -8,6 +8,7 @@ const navItems = [
   { href: "/", label: "Dashboard" },
   { href: "/practice", label: "Practice" },
   { href: "/compete", label: "Compete" },
+  { href: "/friends", label: "Friends" },
   { href: "/videos", label: "Learn" },
 ];
 
