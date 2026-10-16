@@ -33,7 +33,8 @@ export default async function Home() {
 
   return (
     <SiteShell>
-      <div className="page-heading"><div><p className="eyebrow">Your workspace</p><h1>Overview</h1><p>Track your practice and build a stronger argument.</p></div><a className="primary-link-action" href="/debate-bot">Start a debate</a></div>
+      <div className="page-heading"><div><p className="eyebrow">Your workspace</p><h1>Overview</h1><p>Track your practice and build a stronger argument.</p></div></div>
+      <a className="primary-link-action page-primary-action" href="/debate-bot">Start a debate</a>
       <Link className="journal-link" href="/practices">View all my practices and continue a round</Link>
       <section className="dashboard-grid" aria-label="Profile dashboard">
         <article className="profile-panel">

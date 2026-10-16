@@ -32,8 +32,8 @@ export default async function PracticesPage() {
   return <SiteShell>
     <div className="page-heading">
       <div><p className="eyebrow">Your learning journal</p><h1>My practices</h1><p>Continue a round or revisit what you learned.</p></div>
-      <Link className="primary-link-action" href="/debate-bot">New practice</Link>
     </div>
+    {practices.length > 0 && <Link className="primary-link-action page-primary-action" href="/debate-bot">New practice</Link>}
     {!practices.length ? <section className="section-block empty-practices">
       <h2>Your first practice starts with one idea.</h2>
       <p>Pick a topic, make your case, and get a little better with each round. Your practices will be saved here.</p>
