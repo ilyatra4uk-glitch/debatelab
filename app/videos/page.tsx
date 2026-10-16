@@ -4,7 +4,7 @@ import { videoTopics } from "../data";
 export default function VideosPage() {
   return (
     <SiteShell>
-      <section className="section-block">
+      <section className="learn-page">
         <div className="section-title">
           <h2>Debate videos</h2>
         </div>
