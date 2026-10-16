@@ -25,9 +25,14 @@ p { margin-bottom:18px; }
 .top-nav a:hover { color:var(--accent); }
 .top-nav a[aria-current=page] { color:var(--accent); border-bottom-color:var(--accent); }
 .signout-button { margin-left:auto; border:1px solid var(--line); background:#fff; border-radius:8px; padding:8px 15px; font-size:13px; color:#4b4c68; white-space:nowrap; }
-.profile-nav-link { margin-left:auto; color:var(--muted); font-size:13px; font-weight:650; text-decoration:none; }
-.profile-nav-link:hover { color:var(--accent); }
-.profile-nav-link+.signout-button { margin-left:0; }
+.account-menu { position:relative; margin-left:auto; }
+.account-button { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:8px; background:#fff; color:#4b4c68; padding:7px 11px 7px 8px; font-size:13px; font-weight:650; }
+.account-button:hover,.account-button[aria-expanded=true] { border-color:var(--accent-line); color:var(--accent); }
+.account-icon { display:grid; place-items:center; width:22px; height:22px; border-radius:50%; background:var(--accent-soft); color:var(--accent); }
+.account-icon svg { width:15px; height:15px; fill:none; stroke:currentColor; stroke-linecap:round; stroke-width:1.8; }
+.account-popover { position:absolute; z-index:5; right:0; top:calc(100% + 8px); display:grid; min-width:150px; padding:6px; border:1px solid var(--line); border-radius:10px; background:#fff; box-shadow:0 12px 28px #17173518; }
+.account-popover a,.account-popover button { border:0; border-radius:6px; background:transparent; color:var(--foreground); padding:8px 10px; text-align:left; text-decoration:none; font-size:13px; }
+.account-popover a:hover,.account-popover button:hover { background:var(--accent-soft); color:var(--accent); }
 .app-content { max-width:1200px; padding:44px 32px 72px; margin:auto; }
 .page-heading { margin-bottom:18px; }
 .page-heading p:last-child { color:var(--muted); margin:0; }
@@ -255,4 +260,4 @@ summary { cursor:pointer; color:var(--accent); font-weight:600; }
 .mode-card p { color:var(--muted); font-size:14px; }
 .mode-card span { margin-top:auto; color:var(--accent); font-size:13px; font-weight:700; }
 .mode-card.is-coming { background:#f5f5ff; }
-@media(max-width:620px) { .profile-settings,.mode-grid { grid-template-columns:1fr; } .profile-nav-link { margin-left:auto; } }
+@media(max-width:620px) { .profile-settings,.mode-grid { grid-template-columns:1fr; } }
