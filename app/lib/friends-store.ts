@@ -135,6 +135,19 @@ export async function acceptFriendInvite(userId: string, invitationId: string) {
   if (!data) throw new Error("This invitation is no longer available.");
 }
 
+export async function removeFriend(userId: string, friendId: string) {
+  if (!isSupabaseDatabaseConfigured()) throw new Error("Friends are available when the database is configured.");
+  const { data, error } = await getSupabaseDatabaseClient()
+    .from("friendships")
+    .delete()
+    .eq("status", "accepted")
+    .or(`and(requester_id.eq.${userId},recipient_id.eq.${friendId}),and(requester_id.eq.${friendId},recipient_id.eq.${userId})`)
+    .select("id")
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error("This friendship is no longer available.");
+}
+
 function currentStreak(createdAt: string[]) {
   const dates = new Set(createdAt.map((value) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Dublin", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(value))));
   let streak = 0;
