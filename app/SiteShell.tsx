@@ -5,9 +5,10 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const navItems = [
-  { href: "/", label: "Overview" },
-  { href: "/practices", label: "My practices" },
-  { href: "/videos", label: "Lessons" },
+  { href: "/", label: "Dashboard" },
+  { href: "/debate-bot", label: "Practice" },
+  { href: "/compete", label: "Compete" },
+  { href: "/videos", label: "Learn" },
 ];
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
