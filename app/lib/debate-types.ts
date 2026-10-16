@@ -75,5 +75,5 @@ export type PracticeDetail = {
 export type PracticeSummary = {
   debate: DebateRecord;
   speeches: number;
-  score: number | null;
+  score: DebateScore | null;
 };

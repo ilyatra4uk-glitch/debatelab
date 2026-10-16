@@ -709,11 +709,15 @@ async function readStore(): Promise<StoreData> {
 async function writeStore(store: StoreData): Promise<void> {
   try {
     await fs.mkdir(path.dirname(activeStorePath), { recursive: true });
-    await fs.writeFile(activeStorePath, `${JSON.stringify(store, null, 2)}\n`);
+    const temporaryPath = `${activeStorePath}.${crypto.randomUUID()}.tmp`;
+    await fs.writeFile(temporaryPath, `${JSON.stringify(store, null, 2)}\n`);
+    await fs.rename(temporaryPath, activeStorePath);
   } catch (error) {
     if (!isReadOnlyFileSystem(error)) throw error;
     activeStorePath = tmpStorePath;
-    await fs.writeFile(activeStorePath, `${JSON.stringify(store, null, 2)}\n`);
+    const temporaryPath = `${activeStorePath}.${crypto.randomUUID()}.tmp`;
+    await fs.writeFile(temporaryPath, `${JSON.stringify(store, null, 2)}\n`);
+    await fs.rename(temporaryPath, activeStorePath);
   }
 }
 
@@ -756,17 +760,17 @@ export async function getPractice(debateId: string, userId: string): Promise<Pra
 export async function listPractices(userId: string): Promise<PracticeSummary[]> {
   if (isSupabaseDatabaseConfigured()) {
     const { data, error } = await getSupabaseDatabaseClient().from("debates")
-      .select("*, debate_turns(speaker), scores(overall)").eq("user_id", userId).order("updated_at", { ascending: false });
+      .select("*, debate_turns(speaker), scores(*)").eq("user_id", userId).order("updated_at", { ascending: false });
     if (error) throw new Error(error.message);
     return (data ?? []).map((row) => ({ debate: mapSupabaseDebate(row),
       speeches: row.debate_turns.filter((turn: { speaker: string }) => turn.speaker === "user").length,
-      score: row.scores[0]?.overall ?? null }));
+      score: row.scores[0] ? mapSupabaseScore(row.scores[0]) : null }));
   }
   const store = await readStore();
   return store.debates.filter((debate) => debate.userId === userId)
     .sort((a,b) => b.updatedAt.localeCompare(a.updatedAt)).map((debate) => ({ debate,
       speeches: store.turns.filter((turn) => turn.debateId === debate.id && turn.speaker === "user").length,
-      score: store.scores.find((score) => score.debateId === debate.id)?.overall ?? null }));
+      score: store.scores.find((score) => score.debateId === debate.id) ?? null }));
 }
 
 export async function savePracticeExchange(input: {

@@ -10,5 +10,5 @@ export default async function PracticePage({ params }: { params: Promise<{ id: s
   catch (error) { if (error instanceof Error && /not found/i.test(error.message)) notFound(); throw error; }
   const practices = await listPractices(user.userId);
   const previous = practices.find((item) => item.debate.id !== id && item.debate.createdAt < detail.debate.createdAt && item.score !== null);
-  return <PracticeClient key={id} initial={detail} previousScore={previous?.score ?? null} />;
+  return <PracticeClient key={id} initial={detail} previousScore={previous?.score?.overall ?? null} />;
 }

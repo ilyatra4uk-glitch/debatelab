@@ -84,7 +84,7 @@ globalThis.fetch = async (url, options) => {
   assert.equal(saved.data.score.overall,70); assert.equal(saved.data.debate.status,'judged');
   const journal=await fetch(base+'/practices',{ headers:headers('test-pupil') });
   const html=await journal.text();
-  assert.match(html,/Secondary schools should start later/); assert.match(html,/Feedback ready/);
+  assert.match(html,/Secondary schools should start later/); assert.match(html,/Complete/); assert.match(html,/70[^]*?100/);
   const store=JSON.parse(await readFile(path.join(dir,'store.json'),'utf8'));
   assert.equal(store.debates.length,1); assert.equal(store.turns.length,6); assert.equal(store.revisions.length,1);
 });
