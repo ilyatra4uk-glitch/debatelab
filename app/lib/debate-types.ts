@@ -37,6 +37,12 @@ export type DebateScore = {
 export type ProfileStats = {
   debateCount: number;
   averageScore: number | null;
+  weeklyActivity: Array<{
+    label: string;
+    active: boolean;
+  }>;
+  activeDaysThisWeek: number;
+  currentStreak: number;
   currentRank: string;
   latestDebate: DebateRecord | null;
   latestScore: DebateScore | null;

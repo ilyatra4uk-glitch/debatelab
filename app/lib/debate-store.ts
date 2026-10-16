@@ -318,10 +318,12 @@ export async function getProfileStats(userId: string): Promise<ProfileStats> {
     .slice(0, 3);
   const weakestSkill = getWeakestSkill(scores);
   const improvementTrend = getImprovementTrend(scores);
+  const activity = getWeeklyActivity(debates);
 
   return {
     debateCount: debates.length,
     averageScore,
+    ...activity,
     currentRank: scores[0]?.rank ?? "Unranked",
     latestDebate: debates[0] ?? null,
     latestScore: scores[0] ?? null,
@@ -544,10 +546,12 @@ async function getSupabaseProfileStats(userId: string): Promise<ProfileStats> {
     ? Math.round(scores.reduce((sum, score) => sum + score.overall, 0) / scores.length)
     : null;
   const weakestSkill = getWeakestSkill(scores);
+  const activity = getWeeklyActivity(debates);
 
   return {
     debateCount: debates.length,
     averageScore,
+    ...activity,
     currentRank: scores[0]?.rank ?? "Unranked",
     latestDebate: debates[0] ?? null,
     latestScore: scores[0] ?? null,
@@ -562,6 +566,42 @@ async function getSupabaseProfileStats(userId: string): Promise<ProfileStats> {
       createdAt: String(turn.created_at),
     })),
   };
+}
+
+function getWeeklyActivity(debates: DebateRecord[]): Pick<ProfileStats, "weeklyActivity" | "activeDaysThisWeek" | "currentStreak"> {
+  const timeZone = "Europe/Dublin";
+  const today = dateKeyInTimeZone(new Date(), timeZone);
+  const [year, month, day] = today.split("-").map(Number);
+  const weekday = new Intl.DateTimeFormat("en-IE", { weekday: "short", timeZone }).format(new Date(`${today}T12:00:00Z`));
+  const offsetFromMonday = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].indexOf(weekday);
+  const monday = new Date(Date.UTC(year, month - 1, day - Math.max(offsetFromMonday, 0)));
+  const activeDates = new Set(debates.map((debate) => dateKeyInTimeZone(new Date(debate.createdAt), timeZone)));
+  const weekDates = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(monday);
+    date.setUTCDate(monday.getUTCDate() + index);
+    return date.toISOString().slice(0, 10);
+  });
+  let currentStreak = 0;
+  for (let index = 0; ; index += 1) {
+    const date = new Date(Date.UTC(year, month - 1, day - index)).toISOString().slice(0, 10);
+    if (!activeDates.has(date)) break;
+    currentStreak += 1;
+  }
+
+  return {
+    weeklyActivity: weekDates.map((date) => ({
+      label: new Intl.DateTimeFormat("en-IE", { weekday: "short", timeZone }).format(new Date(`${date}T12:00:00Z`)),
+      active: activeDates.has(date),
+    })),
+    activeDaysThisWeek: weekDates.filter((date) => activeDates.has(date)).length,
+    currentStreak,
+  };
+}
+
+function dateKeyInTimeZone(date: Date, timeZone: string): string {
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(date);
+  const value = (type: "year" | "month" | "day") => parts.find((part) => part.type === type)?.value ?? "";
+  return `${value("year")}-${value("month")}-${value("day")}`;
 }
 
 function getJoinedDebateMotion(turn: { debates?: unknown }): string {

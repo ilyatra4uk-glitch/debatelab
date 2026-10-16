@@ -48,6 +48,17 @@ export default async function Home() {
           </article>
         ))}
 
+        <article className="streak-panel">
+          <div>
+            <p className="eyebrow">This week</p>
+            <h2>{stats.activeDaysThisWeek} of 7 days practised</h2>
+            <p>{stats.currentStreak ? `${stats.currentStreak}-day streak — keep it going.` : "Start a practice today to begin your streak."}</p>
+          </div>
+          <ol className="week-activity" aria-label={`${stats.activeDaysThisWeek} active days this week`}>
+            {stats.weeklyActivity.map((day) => <li key={day.label} className={day.active ? "is-active" : ""}><span aria-hidden="true">{day.active ? "✓" : ""}</span>{day.label}</li>)}
+          </ol>
+        </article>
+
         <a className="home-link-panel" href="/videos">
           <p className="eyebrow">Videos</p>
           <h2>Watch debate lessons</h2>
