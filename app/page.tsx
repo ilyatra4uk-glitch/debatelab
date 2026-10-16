@@ -54,9 +54,14 @@ export default async function Home() {
             <h2>{stats.activeDaysThisWeek} of 7 days practised</h2>
             <p>{stats.currentStreak ? `${stats.currentStreak}-day streak — keep it going.` : "Start a practice today to begin your streak."}</p>
           </div>
+          <div className="level-summary">
+            <div><p className="eyebrow">Level</p><strong>{stats.level.label}</strong></div>
+            <div><p className="eyebrow">Rhythm</p><strong>{stats.practiceRhythm.label}</strong><span>{stats.practiceRhythm.activeDaysLast28} days in 28</span></div>
+          </div>
           <ol className="week-activity" aria-label={`${stats.activeDaysThisWeek} active days this week`}>
             {stats.weeklyActivity.map((day) => <li key={day.label} className={day.active ? "is-active" : ""}><span aria-hidden="true">{day.active ? "✓" : ""}</span>{day.label}</li>)}
           </ol>
+          <p className="level-next-step">{stats.level.nextStep}</p>
         </article>
 
         <a className="home-link-panel" href="/videos">

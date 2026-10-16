@@ -43,6 +43,14 @@ export type ProfileStats = {
   }>;
   activeDaysThisWeek: number;
   currentStreak: number;
+  level: {
+    label: "Beginner" | "Confident" | "Master";
+    nextStep: string;
+  };
+  practiceRhythm: {
+    label: "Getting started" | "Weekly" | "Regular";
+    activeDaysLast28: number;
+  };
   currentRank: string;
   latestDebate: DebateRecord | null;
   latestScore: DebateScore | null;

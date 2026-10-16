@@ -319,11 +319,13 @@ export async function getProfileStats(userId: string): Promise<ProfileStats> {
   const weakestSkill = getWeakestSkill(scores);
   const improvementTrend = getImprovementTrend(scores);
   const activity = getWeeklyActivity(debates);
+  const gamification = getGamification(debates, scores, averageScore, improvementTrend.delta);
 
   return {
     debateCount: debates.length,
     averageScore,
     ...activity,
+    ...gamification,
     currentRank: scores[0]?.rank ?? "Unranked",
     latestDebate: debates[0] ?? null,
     latestScore: scores[0] ?? null,
@@ -547,16 +549,19 @@ async function getSupabaseProfileStats(userId: string): Promise<ProfileStats> {
     : null;
   const weakestSkill = getWeakestSkill(scores);
   const activity = getWeeklyActivity(debates);
+  const improvementTrend = getImprovementTrend(scores);
+  const gamification = getGamification(debates, scores, averageScore, improvementTrend.delta);
 
   return {
     debateCount: debates.length,
     averageScore,
     ...activity,
+    ...gamification,
     currentRank: scores[0]?.rank ?? "Unranked",
     latestDebate: debates[0] ?? null,
     latestScore: scores[0] ?? null,
     scoreHistory: scores.slice(0, 5),
-    improvementTrend: getImprovementTrend(scores),
+    improvementTrend,
     weakestSkill,
     focusRecommendation: getFocusRecommendation(weakestSkill.label),
     recentArguments: (turnData ?? []).map((turn) => ({
@@ -566,6 +571,34 @@ async function getSupabaseProfileStats(userId: string): Promise<ProfileStats> {
       createdAt: String(turn.created_at),
     })),
   };
+}
+
+function getGamification(
+  debates: DebateRecord[],
+  scores: DebateScore[],
+  averageScore: number | null,
+  scoreChange: number | null,
+): Pick<ProfileStats, "level" | "practiceRhythm"> {
+  const timeZone = "Europe/Dublin";
+  const today = dateKeyInTimeZone(new Date(), timeZone);
+  const [year, month, day] = today.split("-").map(Number);
+  const cutoff = new Date(Date.UTC(year, month - 1, day - 27)).toISOString().slice(0, 10);
+  const activeDaysLast28 = new Set(
+    debates.map((debate) => dateKeyInTimeZone(new Date(debate.createdAt), timeZone)).filter((date) => date >= cutoff),
+  ).size;
+  const practiceRhythm = activeDaysLast28 >= 8
+    ? { label: "Regular" as const, activeDaysLast28 }
+    : activeDaysLast28 >= 3
+      ? { label: "Weekly" as const, activeDaysLast28 }
+      : { label: "Getting started" as const, activeDaysLast28 };
+  const isGrowing = scoreChange !== null && scoreChange >= 0;
+  const level = scores.length >= 6 && (averageScore ?? 0) >= 75 && activeDaysLast28 >= 8 && isGrowing
+    ? { label: "Master" as const, nextStep: "Keep your rhythm and aim to sharpen your weakest skill." }
+    : scores.length >= 2 && (averageScore ?? 0) >= 60 && activeDaysLast28 >= 3
+      ? { label: "Confident" as const, nextStep: "Keep practising weekly and raise your average towards 75." }
+      : { label: "Beginner" as const, nextStep: "Complete scored practices on three different days to build momentum." };
+
+  return { level, practiceRhythm };
 }
 
 function getWeeklyActivity(debates: DebateRecord[]): Pick<ProfileStats, "weeklyActivity" | "activeDaysThisWeek" | "currentStreak"> {
