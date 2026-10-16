@@ -16,8 +16,8 @@ export type FriendInvitation = {
   createdAt: string;
 };
 
-export async function getFriendsData(userId: string): Promise<{ friends: FriendStats[]; incoming: FriendInvitation[] }> {
-  if (!isSupabaseDatabaseConfigured()) return { friends: [], incoming: [] };
+export async function getFriendsData(userId: string): Promise<{ friends: FriendStats[]; incoming: FriendInvitation[]; outgoing: FriendInvitation[] }> {
+  if (!isSupabaseDatabaseConfigured()) return { friends: [], incoming: [], outgoing: [] };
   const client = getSupabaseDatabaseClient();
   const { data: friendshipRows, error } = await client
     .from("friendships")
@@ -28,8 +28,9 @@ export async function getFriendsData(userId: string): Promise<{ friends: FriendS
   const rows = friendshipRows ?? [];
   const friendIds = rows.filter((row) => row.status === "accepted").map((row) => String(row.requester_id) === userId ? String(row.recipient_id) : String(row.requester_id));
   const incomingRows = rows.filter((row) => row.status === "pending" && String(row.recipient_id) === userId);
-  const peopleIds = [...new Set([...friendIds, ...incomingRows.map((row) => String(row.requester_id))])];
-  if (!peopleIds.length) return { friends: [], incoming: [] };
+  const outgoingRows = rows.filter((row) => row.status === "pending" && String(row.requester_id) === userId);
+  const peopleIds = [...new Set([...friendIds, ...incomingRows.map((row) => String(row.requester_id)), ...outgoingRows.map((row) => String(row.recipient_id))])];
+  if (!peopleIds.length) return { friends: [], incoming: [], outgoing: [] };
 
   const [{ data: users, error: usersError }, { data: debates, error: debatesError }, { data: scores, error: scoresError }] = await Promise.all([
     client.from("users").select("id,display_name,login").in("id", peopleIds),
@@ -60,6 +61,7 @@ export async function getFriendsData(userId: string): Promise<{ friends: FriendS
   return {
     friends,
     incoming: incomingRows.map((row) => ({ id: String(row.id), displayName: usersById.get(String(row.requester_id))?.displayName ?? "Debater", login: usersById.get(String(row.requester_id))?.login ?? null, createdAt: String(row.created_at) })),
+    outgoing: outgoingRows.map((row) => ({ id: String(row.id), displayName: usersById.get(String(row.recipient_id))?.displayName ?? "Debater", login: usersById.get(String(row.recipient_id))?.login ?? null, createdAt: String(row.created_at) })),
   };
 }
 
@@ -146,6 +148,13 @@ export async function removeFriend(userId: string, friendId: string) {
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) throw new Error("This friendship is no longer available.");
+}
+
+export async function cancelFriendInvite(userId: string, invitationId: string) {
+  if (!isSupabaseDatabaseConfigured()) throw new Error("Friends are available when the database is configured.");
+  const { data, error } = await getSupabaseDatabaseClient().from("friendships").delete().eq("id", invitationId).eq("requester_id", userId).eq("status", "pending").select("id").maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error("This invitation is no longer available.");
 }
 
 function currentStreak(createdAt: string[]) {

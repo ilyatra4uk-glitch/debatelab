@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { FriendInvitation, FriendStats } from "../lib/friends-store";
 
-type FriendsClientProps = { friends: FriendStats[]; incoming: FriendInvitation[] };
+type FriendsClientProps = { friends: FriendStats[]; incoming: FriendInvitation[]; outgoing: FriendInvitation[] };
 
-export function FriendsClient({ friends, incoming }: FriendsClientProps) {
+export function FriendsClient({ friends, incoming, outgoing }: FriendsClientProps) {
   const router = useRouter();
   const [login, setLogin] = useState("");
   const [message, setMessage] = useState("");
@@ -36,6 +36,13 @@ export function FriendsClient({ friends, incoming }: FriendsClientProps) {
     finally { setBusy(""); }
   }
 
+  async function cancel(invitationId: string) {
+    setBusy(invitationId); setError(""); setMessage("");
+    try { await request("/api/friends/cancel", { invitationId }); setMessage("Invitation cancelled."); router.refresh(); }
+    catch (reason) { setError(reason instanceof Error ? reason.message : "Could not cancel invitation."); }
+    finally { setBusy(""); }
+  }
+
   async function remove() {
     if (!friendToRemove) return;
     setBusy("remove"); setError(""); setMessage("");
@@ -57,6 +64,16 @@ export function FriendsClient({ friends, incoming }: FriendsClientProps) {
           <div><strong>{invite.displayName}</strong><span>{invite.login ? `@${invite.login}` : "DebateLab member"}</span></div>
         </div>
         <button className="secondary-action" disabled={busy === invite.id} onClick={() => accept(invite.id)}>{busy === invite.id ? "Accepting…" : "Accept"}</button>
+      </article>)}</div>
+    </section>}
+    {outgoing.length > 0 && <section className="friend-invitations friend-outgoing">
+      <div className="section-heading"><h2>Sent invitations</h2></div>
+      <div>{outgoing.map((invite) => <article key={invite.id}>
+        <div className="friend-request-person">
+          <div className="friend-avatar" aria-hidden="true">{invite.displayName.slice(0, 1).toUpperCase()}</div>
+          <div><strong>{invite.displayName}</strong><span>{invite.login ? `@${invite.login}` : "DebateLab member"}</span></div>
+        </div>
+        <button className="secondary-action" disabled={busy === invite.id} onClick={() => cancel(invite.id)}>{busy === invite.id ? "Cancelling…" : "Cancel invite"}</button>
       </article>)}</div>
     </section>}
     <section className="friends-section">

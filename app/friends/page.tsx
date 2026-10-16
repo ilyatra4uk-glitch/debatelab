@@ -7,6 +7,6 @@ import { FriendsClient } from "./FriendsClient";
 export default async function FriendsPage() {
   const { user } = await getCurrentUserState();
   const storedUser = await getOrCreateUser(user);
-  const { friends, incoming } = await getFriendsData(storedUser.userId);
-  return <SiteShell><div className="page-heading"><h1>Your debate circle</h1></div><FriendsClient friends={friends} incoming={incoming} /></SiteShell>;
+  const { friends, incoming, outgoing } = await getFriendsData(storedUser.userId);
+  return <SiteShell><div className="page-heading"><h1>Your debate circle</h1></div><FriendsClient friends={friends} incoming={incoming} outgoing={outgoing} /></SiteShell>;
 }
