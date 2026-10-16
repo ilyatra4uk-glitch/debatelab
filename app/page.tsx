@@ -25,7 +25,7 @@ export default async function Home() {
   const date = new Intl.DateTimeFormat("en-IE", { day: "numeric", month: "short", timeZone: "Europe/Dublin" });
 
   return <SiteShell>
-    <div className="page-heading"><div><p className="eyebrow">Dashboard</p><h1>Your progress</h1></div></div>
+    <div className="page-heading"><div><h1>Your progress</h1></div></div>
     <section className="dashboard-grid" aria-label="Learning dashboard">
       <article className="streak-panel">
         <div><p className="eyebrow">This week</p><h2>{stats.activeDaysThisWeek} of 7 days practised</h2><p>{stats.currentStreak ? `${stats.currentStreak}-day streak — keep it going.` : "Start a practice today to begin your streak."}</p></div>
