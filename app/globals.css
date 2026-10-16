@@ -250,9 +250,12 @@ summary { cursor:pointer; color:var(--accent); font-weight:600; }
 @media(max-width:900px) { .practice-layout { grid-template-columns:1fr; } .practice-sidebar { position:static; grid-template-columns:repeat(2,minmax(0,1fr)); } .practice-sidebar .back-link,.practice-sidebar>div:first-of-type { grid-column:1/-1; } .practice-steps { grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; } .practice-steps li { align-items:flex-start; flex-direction:column; font-size:11px; } .practice-meta { grid-template-columns:repeat(3,minmax(0,1fr)); } }
 @media(max-width:620px) { .top-nav { gap:20px; overflow-x:auto; } .top-nav a { white-space:nowrap; font-size:12px; } .topic-filters { grid-template-columns:1fr; } .practice-table th,.practice-table td { padding-left:14px; padding-right:14px; } .round-progress { gap:6px; } .round-progress li { flex-direction:column; text-align:center; font-size:10px; } .topic-library select[size] { font-size:12px; } .empty-practices { padding:28px; } }
 
-.profile-settings { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; max-width:900px; }
-.profile-settings .section-block { display:grid; gap:16px; align-content:start; }
-.profile-settings .section-block>p,.profile-settings h1,.profile-settings h2 { margin-bottom:0; }
+.profile-settings { display:grid; gap:0; max-width:640px; }
+.profile-settings>header { padding-bottom:30px; }
+.profile-settings>header>p:last-child { color:var(--muted); margin:0; }
+.profile-settings h1,.profile-settings h2 { margin-bottom:0; }
+.settings-section { display:grid; gap:16px; padding:28px 0; border-top:1px solid var(--line); }
+.settings-section .primary-action { justify-self:start; }
 .mode-picker { display:grid; gap:28px; max-width:900px; }
 .mode-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
 .mode-card { display:flex; min-height:220px; flex-direction:column; padding:26px; border:1px solid var(--line); border-radius:14px; background:#fff; color:var(--foreground); text-decoration:none; }
@@ -260,4 +263,4 @@ summary { cursor:pointer; color:var(--accent); font-weight:600; }
 .mode-card p { color:var(--muted); font-size:14px; }
 .mode-card span { margin-top:auto; color:var(--accent); font-size:13px; font-weight:700; }
 .mode-card.is-coming { background:#f5f5ff; }
-@media(max-width:620px) { .profile-settings,.mode-grid { grid-template-columns:1fr; } }
+@media(max-width:620px) { .mode-grid { grid-template-columns:1fr; } }
