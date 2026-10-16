@@ -22,7 +22,6 @@ export default async function Home() {
 
   return <SiteShell>
     <div className="page-heading"><div><p className="eyebrow">Dashboard</p><h1>Your progress</h1><p>Keep your practice steady and make each argument clearer.</p></div></div>
-    <Link className="journal-link" href="/practices">View my practices</Link>
     <section className="dashboard-grid" aria-label="Learning dashboard">
       <article className="streak-panel">
         <div><p className="eyebrow">This week</p><h2>{stats.activeDaysThisWeek} of 7 days practised</h2><p>{stats.currentStreak ? `${stats.currentStreak}-day streak — keep it going.` : "Start a practice today to begin your streak."}</p></div>
