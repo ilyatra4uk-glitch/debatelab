@@ -32,5 +32,25 @@ export function FriendsClient({ incoming }: { incoming: FriendInvitation[] }) {
     finally { setBusy(""); }
   }
 
-  return <><section className="friend-invite-bar"><span>Add a friend</span><form className="friend-invite-form" onSubmit={invite}><label className="sr-only" htmlFor="friend-login">Friend&apos;s login</label><input id="friend-login" value={login} onChange={(event) => setLogin(event.target.value)} placeholder="Enter login" required /><button className="primary-action" disabled={busy === "invite"}>{busy === "invite" ? "Sending…" : "Send invite"}</button></form></section>{(message || error) && <p className={error ? "error-message" : "success-message"} role="status">{error || message}</p>}{incoming.length > 0 && <section className="friend-invitations"><div className="section-heading"><h2>Invitations</h2></div><div>{incoming.map((invite) => <article key={invite.id}><div><strong>{invite.displayName}</strong><span>{invite.login ? `@${invite.login}` : "DebateLab member"}</span></div><button className="secondary-action" disabled={busy === invite.id} onClick={() => accept(invite.id)}>{busy === invite.id ? "Accepting…" : "Accept"}</button></article>)}</div></section>}</>;
+  return <>
+    <section className="friend-add-control" aria-label="Add a friend">
+      <span>Add by login</span>
+      <form className="friend-invite-form" onSubmit={invite}>
+        <label className="sr-only" htmlFor="friend-login">Friend&apos;s login</label>
+        <input id="friend-login" value={login} onChange={(event) => setLogin(event.target.value)} placeholder="Search by login" required />
+        <button className="primary-action" disabled={busy === "invite"}>{busy === "invite" ? "Sending…" : "Add friend"}</button>
+      </form>
+    </section>
+    {(message || error) && <p className={error ? "error-message" : "success-message"} role="status">{error || message}</p>}
+    {incoming.length > 0 && <section className="friend-invitations">
+      <div className="section-heading"><h2>Friend requests</h2></div>
+      <div>{incoming.map((invite) => <article key={invite.id}>
+        <div className="friend-request-person">
+          <div className="friend-avatar" aria-hidden="true">{invite.displayName.slice(0, 1).toUpperCase()}</div>
+          <div><strong>{invite.displayName}</strong><span>{invite.login ? `@${invite.login}` : "DebateLab member"}</span></div>
+        </div>
+        <button className="secondary-action" disabled={busy === invite.id} onClick={() => accept(invite.id)}>{busy === invite.id ? "Accepting…" : "Accept"}</button>
+      </article>)}</div>
+    </section>}
+  </>;
 }
