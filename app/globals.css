@@ -47,6 +47,19 @@ p { margin-bottom:18px; }
 .dialog-mode-list span { font-size:13px; }
 .friends-ranking-dialog { position:relative; width:min(100%,620px); max-height:min(680px,calc(100vh - 48px)); overflow:auto; padding:28px; border:1px solid var(--line); border-radius:14px; background:#fff; box-shadow:0 20px 60px #17173535; }
 .friends-ranking-dialog h2 { margin-bottom:22px; }
+.scoreboard-tabs { display:flex; gap:8px; margin:-8px 0 18px; }
+.scoreboard-tabs button { min-height:34px; padding:6px 11px; border:1px solid var(--line); border-radius:7px; background:#fff; color:var(--muted); font-size:12px; font-weight:700; }
+.scoreboard-tabs button[aria-selected=true] { border-color:var(--accent); background:var(--accent-soft); color:var(--accent); }
+.scoreboard-table-wrap { overflow-x:auto; border:1px solid var(--line); border-radius:10px; }
+.scoreboard-table { width:100%; min-width:510px; border-collapse:collapse; text-align:left; }
+.scoreboard-table th { padding:11px 14px; background:#f5f5ff; color:var(--muted); font-size:10px; letter-spacing:.06em; text-transform:uppercase; }
+.scoreboard-table td { padding:14px; border-top:1px solid var(--line); font-size:13px; }
+.scoreboard-table tbody tr:first-child td:first-child { color:#8a6811; font-weight:750; }
+.scoreboard-table tr.is-you { background:var(--accent-soft); }
+.scoreboard-table td:first-child { color:var(--accent); font-weight:750; }
+.scoreboard-table td:nth-child(n+3),.scoreboard-table th:nth-child(n+3) { text-align:right; }
+.scoreboard-table td:nth-child(2) strong { display:block; font-size:13px; }
+.scoreboard-table td:nth-child(2) span { color:var(--muted); font-size:11px; }
 .scoreboard-description { margin:-14px 0 22px; color:var(--muted); font-size:13px; }
 .friends-ranking-list { display:grid; gap:12px; padding:0; margin:0; list-style:none; }
 .friends-ranking-list li { display:grid; grid-template-columns:38px minmax(0,1fr) auto; align-items:center; column-gap:14px; row-gap:10px; padding:16px; border:1px solid var(--line); border-radius:10px; background:#fff; }
