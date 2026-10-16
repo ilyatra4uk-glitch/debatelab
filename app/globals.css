@@ -45,6 +45,15 @@ p { margin-bottom:18px; }
 .dialog-mode-list>a:hover { border-color:var(--accent); background:var(--accent-soft); }
 .dialog-mode-list>div { color:var(--muted); background:#fafaff; }
 .dialog-mode-list span { font-size:13px; }
+.friends-ranking-dialog { position:relative; width:min(100%,620px); max-height:min(680px,calc(100vh - 48px)); overflow:auto; padding:28px; border:1px solid var(--line); border-radius:14px; background:#fff; box-shadow:0 20px 60px #17173535; }
+.friends-ranking-dialog h2 { margin-bottom:22px; }
+.friends-ranking-list { display:grid; gap:12px; padding:0; margin:0; list-style:none; }
+.friends-ranking-list li { display:grid; grid-template-columns:48px minmax(0,1fr) auto; align-items:center; gap:14px; padding:16px; border:1px solid var(--line); border-radius:10px; background:#fff; }
+.friends-rank-number { color:var(--accent); font-size:24px; font-weight:750; letter-spacing:-1px; }
+.friends-rank-person { display:grid; gap:2px; }
+.friends-rank-person strong { font-size:15px; }
+.friends-rank-person span,.friends-rank-stats { color:var(--muted); font-size:12px; }
+.friends-rank-stats { display:flex; justify-content:end; gap:10px; text-align:right; white-space:nowrap; }
 .app-content { max-width:1200px; padding:44px 32px 72px; margin:auto; }
 .page-heading { margin-bottom:18px; }
 .page-heading p:last-child { color:var(--muted); margin:0; }
@@ -79,6 +88,8 @@ p { margin-bottom:18px; }
 .result-progress { display:grid; grid-column:1/-1; gap:3px; padding-top:10px; border-top:1px solid var(--line); }
 .result-progress>span { font-size:11px; font-weight:700; }
 .leaderboard-panel { display:grid; grid-template-rows:auto 1fr; gap:5px; padding:20px 26px 26px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+.ranking-panel-button { width:100%; color:var(--foreground); text-align:left; }
+.ranking-panel-button:hover { border-color:var(--accent); }
 .ranking-metrics { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-self:stretch; gap:12px; }
 .ranking-metrics>div { display:grid; grid-template-rows:auto 1fr; justify-items:center; align-content:stretch; gap:8px; padding-right:12px; border-right:1px solid var(--line); text-align:center; }
 .ranking-metrics>div:last-child { padding-right:0; border-right:0; }
