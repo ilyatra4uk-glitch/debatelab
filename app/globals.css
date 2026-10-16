@@ -19,7 +19,7 @@ p { margin-bottom:18px; }
 .app-header { background:#fff; border-bottom:1px solid var(--line); }
 .header-inner { max-width:1200px; min-height:72px; padding:0 32px; margin:auto; display:flex; align-items:center; gap:48px; }
 .brand { display:inline-flex; align-items:center; gap:11px; font-weight:760; font-size:20px; letter-spacing:-.7px; text-decoration:none; color:var(--foreground); white-space:nowrap; }
-.brand-mark { display:grid; place-items:center; width:33px; height:35px; border-radius:10px 10px 10px 3px; background:var(--accent); color:#fff; font-size:21px; }
+.brand-mark { width:34px; height:34px; }
 .top-nav { display:flex; align-self:stretch; gap:30px; }
 .top-nav a { display:flex; align-items:center; border-bottom:3px solid transparent; padding-top:3px; text-decoration:none; color:var(--muted); font-size:14px; font-weight:650; }
 .top-nav a:hover { color:var(--accent); }

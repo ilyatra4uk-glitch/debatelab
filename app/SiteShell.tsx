@@ -33,7 +33,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <header className="app-header">
         <div className="header-inner">
-          <Link className="brand" href="/" aria-label="DebateLab home"><span className="brand-mark" aria-hidden="true">D</span>DebateLab</Link>
+          <Link className="brand" href="/" aria-label="DebateLab home"><img className="brand-mark" src="/favicon.svg" alt="" />DebateLab</Link>
           <nav className="top-nav" aria-label="Main navigation">
             {navItems.map((item) => <Link aria-current={(pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href + "/"))) ? "page" : undefined} href={item.href} key={item.href}>{item.label}</Link>)}
           </nav>
