@@ -24,10 +24,10 @@ p { margin-bottom:18px; }
 .top-nav a { display:flex; align-items:center; border-bottom:3px solid transparent; padding-top:3px; text-decoration:none; color:var(--muted); font-size:14px; font-weight:650; }
 .top-nav a:hover { color:var(--accent); }
 .top-nav a[aria-current=page] { color:var(--accent); border-bottom-color:var(--accent); }
-.header-debate-button { margin-left:auto; min-height:38px; padding:8px 14px; border:1px solid var(--accent); border-radius:8px; background:var(--accent); color:#fff; font-size:13px; font-weight:700; white-space:nowrap; }
+.header-debate-button { min-height:38px; padding:8px 14px; border:1px solid var(--accent); border-radius:8px; background:var(--accent); color:#fff; font-size:13px; font-weight:700; white-space:nowrap; }
 .header-debate-button:hover { background:var(--accent-hover); }
 .signout-button { margin-left:auto; border:1px solid var(--line); background:#fff; border-radius:8px; padding:8px 15px; font-size:13px; color:#4b4c68; white-space:nowrap; }
-.account-menu { position:relative; }
+.account-menu { position:relative; margin-left:auto; }
 .account-button { display:grid; place-items:center; width:34px; height:34px; padding:0; border:0; border-radius:50%; background:transparent; color:#4b4c68; }
 .account-button:hover,.account-button[aria-expanded=true] { background:var(--accent-soft); color:var(--accent); }
 .account-icon { display:grid; place-items:center; width:28px; height:28px; border:1px solid var(--line); border-radius:50%; background:#fff; color:inherit; }
