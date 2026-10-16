@@ -75,9 +75,9 @@ export function FriendsClient({ friends, incoming }: FriendsClientProps) {
         <button className="dialog-close" aria-label="Close" onClick={() => setInviteOpen(false)}>×</button>
         <h2 id="add-friend-title">Add a friend</h2>
         <p>Enter their unique DebateLab username to send an invitation.</p>
-        <form className="friend-dialog-form" onSubmit={invite}>
-          <label htmlFor="friend-login">Username</label>
-          <input id="friend-login" name="friend-login" type="search" autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck={false} value={login} onChange={(event) => setLogin(event.target.value)} placeholder="e.g. ava-murphy" required autoFocus />
+        <form className="friend-dialog-form" autoComplete="off" data-lpignore="true" onSubmit={invite}>
+          <label htmlFor="friend-search">Username</label>
+          <input id="friend-search" name="friend-search" type="search" autoComplete="off" autoCorrect="off" autoCapitalize="none" aria-autocomplete="none" data-1p-ignore="true" data-bwignore="true" data-lpignore="true" spellCheck={false} value={login} onChange={(event) => setLogin(event.target.value)} placeholder="e.g. ava-murphy" required autoFocus />
           <button className="primary-action" disabled={busy === "invite"}>{busy === "invite" ? "Sending…" : "Send invitation"}</button>
         </form>
       </section>
