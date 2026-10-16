@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "DebateLab",
   description:
-    "Track your debate profile, friends, learning videos, and competitions.",
+    "Practice debates, track your results, and watch debate lessons.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

@@ -1,4 +1,4 @@
-import { judgeDebate } from "@/app/lib/debate-ai";
+import { DebateAIError, judgeDebate } from "@/app/lib/debate-ai";
 import { getCurrentUserState } from "@/app/lib/current-user";
 import {
   getDebateForUser,
@@ -8,6 +8,7 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 export async function POST(request: Request) {
   try {
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
   } catch (error) {
     return Response.json(
       { error: error instanceof Error ? error.message : "Unexpected error." },
-      { status: 500 },
+      { status: error instanceof DebateAIError ? error.status : 500 },
     );
   }
 }

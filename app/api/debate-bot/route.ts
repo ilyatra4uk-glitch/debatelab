@@ -4,11 +4,12 @@ import {
   createBotDebate,
   getOrCreateUser,
 } from "@/app/lib/debate-store";
-import { generateBotReply } from "@/app/lib/debate-ai";
+import { DebateAIError, generateBotReply } from "@/app/lib/debate-ai";
 import type { DebateSide } from "@/app/lib/debate-types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 export async function POST(request: Request) {
   try {
@@ -43,6 +44,7 @@ export async function POST(request: Request) {
     }
 
     const user = await getOrCreateUser(authUser);
+    const botReply = await generateBotReply({ motion, side }, argument);
     const debate = await createBotDebate({
       userId: user.userId,
       motion,
@@ -53,7 +55,6 @@ export async function POST(request: Request) {
       speaker: "user",
       content: argument,
     });
-    const botReply = await generateBotReply(debate, argument);
     const botTurn = await addDebateTurn({
       debateId: debate.id,
       speaker: "bot",
@@ -67,7 +68,7 @@ export async function POST(request: Request) {
   } catch (error) {
     return Response.json(
       { error: error instanceof Error ? error.message : "Unexpected error." },
-      { status: 500 },
+      { status: error instanceof DebateAIError ? error.status : 500 },
     );
   }
 }

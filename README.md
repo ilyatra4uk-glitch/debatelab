@@ -98,3 +98,22 @@ actions tied to the current ChatGPT user. Leave public content anonymous.
 
 - [vinext Documentation](https://github.com/cloudflare/vinext)
 - [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+
+## Debate AI
+
+Bot replies and judging require a server-side `OPENAI_API_KEY`. Copy
+`.env.example` to `.env.local` for local development and fill in the key.
+For hosting, set the same secret in the deployment environment and redeploy.
+Never use a `NEXT_PUBLIC_` prefix for this key. `OPENAI_MODEL` optionally
+selects the model; the default is `gpt-4.1-mini`.
+
+Both features call the OpenAI Responses API. There are no simulated replies
+or heuristic scores: missing configuration, API failures, refusals, and
+incomplete responses appear as errors. A bot response is generated before
+creating the saved debate, so an AI failure does not create an empty debate.
+Judging evaluates the saved opening exchange and validates all scores before
+saving them. Speaking style measures written clarity, not audio delivery.
+
+Run `npm run test:ai` for isolated integration tests with mocked API responses.
+These tests do not require a key or make paid API calls. A live check requires
+registering/signing in, starting a bot debate, then choosing “Judge and rank me”.

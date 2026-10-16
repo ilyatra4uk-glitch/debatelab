@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { SiteShell } from "./SiteShell";
 import { ProfileClientStats } from "./ProfileClientStats";
 import { getCurrentUserState } from "./lib/current-user";
@@ -9,39 +10,7 @@ export const runtime = "nodejs";
 export default async function Home() {
   const { isRegistered, user: authUser } = await getCurrentUserState();
 
-  if (!isRegistered) {
-    return (
-      <SiteShell>
-        <section className="welcome-panel" aria-label="Welcome">
-          <div className="welcome-copy">
-            <p className="eyebrow">DebateLab</p>
-            <h1>Practice debating with an AI judge</h1>
-            <p>
-              Create a speaker profile to save your bot debates, scores, rank,
-              and feedback history.
-            </p>
-            <div className="welcome-actions">
-              <a className="primary-link-action" href="/register">
-                Create profile
-              </a>
-              <a className="secondary-link-action" href="/videos">
-                Watch lessons
-              </a>
-            </div>
-          </div>
-          <aside className="welcome-preview" aria-label="MVP flow">
-            <p className="eyebrow">First scenario</p>
-            <ol>
-              <li>Choose a debate motion</li>
-              <li>Write your opening argument</li>
-              <li>Get bot response and AI judging</li>
-              <li>Track your score in profile</li>
-            </ol>
-          </aside>
-        </section>
-      </SiteShell>
-    );
-  }
+  if (!isRegistered) redirect("/login");
 
   const user = await getOrCreateUser(authUser);
   const stats = await getProfileStats(user.userId);
@@ -58,6 +27,7 @@ export default async function Home() {
 
   return (
     <SiteShell>
+      <div className="page-heading"><div><p className="eyebrow">Your workspace</p><h1>Overview</h1><p>Track your practice and build a stronger argument.</p></div><a className="primary-link-action" href="/debate-bot">Start a debate →</a></div>
       <section className="dashboard-grid" aria-label="Profile dashboard">
         <article className="profile-panel">
           <div className="avatar" aria-hidden="true">

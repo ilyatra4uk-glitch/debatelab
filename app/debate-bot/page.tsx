@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { SiteShell } from "../SiteShell";
-import { VoiceArgumentBox } from "../VoiceArgumentBox";
+import { ArgumentBox } from "../ArgumentBox";
 import { debatePrompts } from "../data";
 import { rememberLatestScore } from "../ProfileClientStats";
 import type {
@@ -23,28 +23,9 @@ type JudgeResponse = {
   error?: string;
 };
 
-const focusAreas = [
-  "Diagnostic test",
-  "Argument structure",
-  "Logic",
-  "Evidence",
-  "Rebuttal",
-  "Speaking style",
-];
-
-const focusHelp: Record<string, string> = {
-  "Diagnostic test": "Debate normally. The judge will identify your weakest area.",
-  "Argument structure": "Make a clear claim, then add one reason and one impact.",
-  Logic: "Make the link between your claim and impact impossible to miss.",
-  Evidence: "Use one concrete example, comparison, or real-world case.",
-  Rebuttal: "Answer the strongest opposing point before extending your case.",
-  "Speaking style": "Use shorter sentences and signpost each step of the argument.",
-};
-
 export default function DebateBotPage() {
   const [motion, setMotion] = useState(debatePrompts[0]);
   const [side, setSide] = useState<DebateSide>("for");
-  const [focusArea, setFocusArea] = useState(getInitialFocusArea);
   const [argument, setArgument] = useState("");
   const [debate, setDebate] = useState<DebateRecord | null>(null);
   const [turns, setTurns] = useState<DebateTurn[]>([]);
@@ -57,6 +38,8 @@ export default function DebateBotPage() {
   async function startDebate() {
     setError("");
     setScore(null);
+    setDebate(null);
+    setTurns([]);
     setIsStarting(true);
     setStatus("Starting debate...");
 
@@ -124,23 +107,8 @@ export default function DebateBotPage() {
           <h2>Debate with bot</h2>
         </div>
         <p className="tool-copy">
-          Choose a diagnostic test debate, or focus the judge on one skill you
-          want to improve.
+          Choose a motion and side, write your opening argument, and get a bot response.
         </p>
-        <div className="focus-strip" aria-label="Training mode">
-          {focusAreas.map((area) => (
-            <button
-              aria-pressed={focusArea === area}
-              className={focusArea === area ? "selected-option" : ""}
-              key={area}
-              onClick={() => setFocusArea(area)}
-              type="button"
-            >
-              {area}
-            </button>
-          ))}
-        </div>
-        <p className="focus-note">{focusHelp[focusArea]}</p>
         <div className="motion-list">
           {debatePrompts.map((prompt) => (
             <button
@@ -172,19 +140,15 @@ export default function DebateBotPage() {
             Against
           </button>
         </div>
-        <VoiceArgumentBox
+        <ArgumentBox
           label="Your argument"
           onChange={setArgument}
-          placeholder={
-            focusArea === "Diagnostic test"
-              ? "Write your opening argument, or press record and speak..."
-              : `${focusHelp[focusArea]} Then write or record your opening argument...`
-          }
+          placeholder="Write your opening argument..."
           value={argument}
         />
         <button
           className="primary-action"
-          disabled={isStarting}
+          disabled={isStarting || isJudging}
           onClick={startDebate}
           type="button"
         >
@@ -192,7 +156,7 @@ export default function DebateBotPage() {
         </button>
         <button
           className="secondary-action"
-          disabled={isJudging || !debate}
+          disabled={isStarting || isJudging || !debate}
           onClick={judgeCurrentDebate}
           type="button"
         >
@@ -236,38 +200,4 @@ export default function DebateBotPage() {
       </section>
     </SiteShell>
   );
-}
-
-function getInitialFocusArea() {
-  if (typeof window === "undefined") return focusAreas[0];
-
-  const params = new URLSearchParams(window.location.search);
-  const requestedFocus = params.get("focus");
-  const requestedMode = params.get("mode");
-  const storedRegistration = window.localStorage.getItem("debateLabRegistration");
-
-  if (requestedFocus && focusAreas.includes(requestedFocus)) {
-    return requestedFocus;
-  }
-
-  if (requestedMode === "test") {
-    return "Diagnostic test";
-  }
-
-  if (!storedRegistration) return focusAreas[0];
-
-  try {
-    const parsed = JSON.parse(storedRegistration) as {
-      trainingMode?: string;
-      focusArea?: string;
-    };
-
-    if (parsed.trainingMode === "focused" && parsed.focusArea) {
-      return parsed.focusArea;
-    }
-  } catch {
-    window.localStorage.removeItem("debateLabRegistration");
-  }
-
-  return focusAreas[0];
 }

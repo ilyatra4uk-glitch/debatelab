@@ -1,116 +1,57 @@
-import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import test from "node:test";
+import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
+import { once } from 'node:events';
+import test from 'node:test';
 
-const page = new URL("../app/page.tsx", import.meta.url);
-const layout = new URL("../app/layout.tsx", import.meta.url);
-
-test("home page contains the debate dashboard sections", async () => {
-  const [source, shell, data] = await Promise.all([
-    readFile(page, "utf8"),
-    readFile(new URL("../app/SiteShell.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/data.ts", import.meta.url), "utf8"),
-  ]);
-
-  assert.match(shell, /DebateLab/);
-  assert.doesNotMatch(shell, /Your debate command center/);
-  assert.match(source, /Profile/);
-  assert.match(data, /Debates won/);
-  assert.match(data, /Debates lost/);
-  assert.match(source, /href="\/videos"/);
-  assert.match(source, /Watch debate lessons/);
-  assert.match(shell, /sidebar-toggle/);
-  assert.match(shell, /sidebar-checkbox/);
-  assert.doesNotMatch(source, /Judge decision/);
-  assert.doesNotMatch(source, /Bot response|Current motion/);
-});
-
-test("championships page contains available championships", async () => {
-  const source = await readFile(
-    new URL("../app/championships/page.tsx", import.meta.url),
-    "utf8",
-  );
-
-  assert.match(source, /Available championships/);
-  assert.match(source, /Available now/);
-});
-
-test("sidebar links navigate to separate pages", async () => {
-  const shell = await readFile(new URL("../app/SiteShell.tsx", import.meta.url), "utf8");
-
-  assert.doesNotMatch(shell, /usePathname/);
-  assert.doesNotMatch(shell, /next\/link/);
-  assert.match(shell, /href: "\/videos"/);
-  assert.match(shell, /href: "\/login"/);
-  assert.match(shell, /href: "\/debate-bot"/);
-  assert.match(shell, /href: "\/debate-friend"/);
-  assert.match(shell, /href: "\/championships"/);
-  assert.match(shell, /href: "\/friends"/);
-});
-
-test("video lessons use embedded players", async () => {
-  const source = await readFile(
-    new URL("../app/videos/page.tsx", import.meta.url),
-    "utf8",
-  );
-
-  assert.match(source, /iframe/);
-  assert.match(source, /video-embed/);
-  assert.doesNotMatch(source, /Watch video/);
-});
-
-test("debate pages support voice recording", async () => {
-  const [voice, botPage, friendPage] = await Promise.all([
-    readFile(new URL("../app/VoiceArgumentBox.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/debate-bot/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/debate-friend/page.tsx", import.meta.url), "utf8"),
-  ]);
-
-  assert.match(voice, /SpeechRecognition/);
-  assert.match(voice, /Record speech/);
-  assert.match(botPage, /VoiceArgumentBox/);
-  assert.match(friendPage, /VoiceArgumentBox/);
-});
-
-test("login uses a magic link flow", async () => {
-  const [loginPage, loginRoute, callbackRoute, verifyRoute, store] = await Promise.all([
-    readFile(new URL("../app/login/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/api/login/route.ts", import.meta.url), "utf8"),
-    readFile(new URL("../app/api/login/callback/route.ts", import.meta.url), "utf8"),
-    readFile(new URL("../app/api/login/verify/route.ts", import.meta.url), "utf8"),
-    readFile(new URL("../app/lib/debate-store.ts", import.meta.url), "utf8"),
-  ]);
-
-  assert.match(loginPage, /Magic link login/);
-  assert.match(loginPage, /Open magic link/);
-  assert.match(loginPage, /Check your email/);
-  assert.match(loginRoute, /signInWithOtp/);
-  assert.match(loginRoute, /createMagicLoginToken/);
-  assert.match(callbackRoute, /exchangeCodeForSession/);
-  assert.match(verifyRoute, /consumeMagicLoginToken/);
-  assert.match(store, /expiresAt/);
-  assert.match(store, /usedAt/);
-});
-
-test("store can use Supabase for persistent app data", async () => {
-  const [store, supabase] = await Promise.all([
-    readFile(new URL("../app/lib/debate-store.ts", import.meta.url), "utf8"),
-    readFile(new URL("../app/lib/supabase-server.ts", import.meta.url), "utf8"),
-  ]);
-
-  assert.match(supabase, /SUPABASE_SERVICE_ROLE_KEY/);
-  assert.match(store, /isSupabaseDatabaseConfigured/);
-  assert.match(store, /from\("users"\)/);
-  assert.match(store, /from\("debates"\)/);
-  assert.match(store, /from\("scores"\)/);
-});
-
-test("starter preview references are removed", async () => {
-  const [pageSource, layoutSource] = await Promise.all([
-    readFile(page, "utf8"),
-    readFile(layout, "utf8"),
-  ]);
-
-  assert.doesNotMatch(pageSource, /SkeletonPreview|_sites-preview/);
-  assert.doesNotMatch(layoutSource, /Starter Project|codex-preview/);
+// Exercise built routes without database credentials or authenticated headers.
+test('authentication boundary and standalone account screens', async (t) => {
+  const server = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'start', '-p', '0'], {
+    cwd: new URL('..', import.meta.url),
+    env: { ...process.env, SUPABASE_URL: '', NEXT_PUBLIC_SUPABASE_URL: '', SUPABASE_SERVICE_ROLE_KEY: '', OPENAI_API_KEY: '' },
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  t.after(async () => { server.kill(); await once(server, 'exit'); });
+  const base = await new Promise((resolve, reject) => {
+    let output = '';
+    const timer = setTimeout(() => reject(new Error(`Server startup timed out: ${output}`)), 15000);
+    server.on('error', reject);
+    server.stdout.on('data', chunk => {
+      output += chunk;
+      const match = output.match(/http:\/\/localhost:(\d+)/);
+      if (match && output.includes('Ready')) { clearTimeout(timer); resolve(match[0]); }
+    });
+    server.stderr.on('data', chunk => { output += chunk; });
+  });
+  for (const path of ['/', '/debate-bot', '/videos']) {
+    await t.test(`guest redirected from ${path}`, async () => {
+      const response = await fetch(base + path, { redirect: 'manual' });
+      assert.equal(response.status, 307);
+      assert.equal(response.headers.get('location'), '/login');
+    });
+  }
+  for (const path of ['/login', '/register']) {
+    await t.test(`${path} is a standalone account page`, async () => {
+      const response = await fetch(base + path);
+      assert.equal(response.status, 200);
+      const html = await response.text();
+      assert.match(html, /autocomplete="username"/i);
+      assert.match(html, /type="password"/);
+      assert.doesNotMatch(html, /Main navigation|sidebar-toggle|Sign out/);
+    });
+  }
+  for (const [path, body] of [
+    ['/api/debate-bot', { motion: 'A test motion', side: 'for', argument: 'A sufficiently detailed argument for testing access.' }],
+    ['/api/debate-bot/judge', { debateId: 'not-a-real-debate' }],
+  ]) {
+    await t.test(`guest denied API access to ${path}`, async () => {
+      const response = await fetch(base + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      assert.equal(response.status, 401);
+    });
+  }
+  await t.test('logout clears session cookie', async () => {
+    const response = await fetch(base + '/api/logout', { method: 'POST' });
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get('set-cookie'), /debateLabSession=;/);
+    assert.match(response.headers.get('set-cookie'), /Max-Age=0/i);
+  });
 });

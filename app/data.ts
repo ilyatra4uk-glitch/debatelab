@@ -127,38 +127,6 @@ export const videoTopics = [
   },
 ];
 
-export const competitions = [
-  {
-    title: "Saturday Sprint",
-    format: "3 rounds",
-    prize: "Global ranking points",
-    status: "Open",
-  },
-  {
-    title: "Schools Cup",
-    format: "Team debate",
-    prize: "Mentor review",
-    status: "Soon",
-  },
-  {
-    title: "AI Challenge Ladder",
-    format: "Solo vs bot",
-    prize: "Weekly badge",
-    status: "Live",
-  },
-];
-
-export const achievements = [
-  { label: "Debates won", value: "18" },
-  { label: "Debates lost", value: "5" },
-];
-
-export const friends = [
-  { name: "Maya", record: "14 wins", status: "Online" },
-  { name: "Leo", record: "9 wins", status: "In round" },
-  { name: "Ari", record: "22 wins", status: "Online" },
-];
-
 export const debatePrompts = [
   "THW abolish private schools",
   "THBT climate adaptation should be prioritized over mitigation in the Global South",
