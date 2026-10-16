@@ -17,7 +17,7 @@ export function TopicPicker({ motion, onChange, disabled = false }: { motion: st
         <span aria-hidden="true">↻</span> New random topic
       </button>
       <button className="topic-library-toggle" type="button" disabled={disabled} aria-expanded={isLibraryOpen} onClick={() => setLibraryOpen((value) => !value)}>
-        Browse library <span aria-hidden="true">{isLibraryOpen ? "⌃" : "⌄"}</span>
+        {isLibraryOpen ? "Close library" : "Choose from library"}
       </button>
     </div>
     {isLibraryOpen && <div className="topic-library-panel">
