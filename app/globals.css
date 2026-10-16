@@ -98,7 +98,8 @@ p { margin-bottom:18px; }
 .week-activity span { display:grid; place-items:center; width:28px; height:28px; border:1px solid var(--accent-line); border-radius:50%; background:#fff; color:#fff; font-size:14px; }
 .week-activity .is-active { color:var(--accent); }
 .week-activity .is-active span { border-color:var(--accent); background:var(--accent); }
-.level-next-step { grid-column:1/-1; border-top:1px solid var(--accent-line); padding-top:14px; }
+.level-next-step { grid-column:1/-1; padding-top:14px; border-top:1px solid var(--accent-line); color:var(--accent); font-size:13px; font-weight:650; text-decoration:none; }
+.level-next-step:hover { text-decoration:underline; }
 .home-link-panel { background:#ececff; text-decoration:none; color:var(--foreground); display:flex; flex-direction:column; align-items:flex-start; }
 .home-link-panel h2 { font-size:24px; }
 .home-link-panel span { margin-top:auto; color:var(--accent); font-weight:650; font-size:13px; }
