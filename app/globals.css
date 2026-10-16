@@ -89,7 +89,7 @@ p { margin-bottom:18px; }
 .streak-panel>div:first-child { align-self:start; }
 .streak-panel h2 { margin-bottom:6px; font-size:22px; }
 .streak-panel p:last-child { margin:0; color:var(--muted); font-size:13px; }
-.level-summary { display:grid; grid-template-columns:1fr; grid-row:span 2; align-self:stretch; width:min(250px,28vw); padding:64px 0 0 22px; border-left:1px solid var(--accent-line); }
+.level-summary { display:grid; grid-template-columns:1fr; grid-row:span 2; align-self:stretch; align-content:center; width:min(250px,28vw); padding-left:22px; border-left:1px solid var(--accent-line); }
 .level-summary>div { display:grid; justify-items:center; align-content:start; gap:2px; text-align:center; }
 .level-summary>div+div { margin-top:14px; padding-top:14px; border-top:1px solid var(--accent-line); }
 .level-summary .eyebrow { margin:0; font-size:10px; }
