@@ -615,7 +615,8 @@ function getBestStreak(debates: DebateRecord[]) {
 function getProgressHistory(scores: DebateScore[], debates: DebateRecord[]): ProgressScore[] {
   const topicDivision = new Map(debateTopics.map((topic) => [topic.motion, topic.level]));
   const debateById = new Map(debates.map((debate) => [debate.id, debate]));
-  return scores.slice(0, 8).reverse().map((score) => {
+  const calendarYear = new Date().getFullYear();
+  return scores.filter((score) => new Date(score.createdAt).getFullYear() === calendarYear).reverse().map((score) => {
     const division = topicDivision.get(debateById.get(score.debateId)?.motion ?? "") ?? "Junior";
     // Senior topics in Irish post-primary competitions allow more preparation and longer speeches;
     // the small 4% coefficient makes the learning trend comparable without turning difficulty into a bonus.

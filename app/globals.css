@@ -90,6 +90,7 @@ p { margin-bottom:18px; }
 .progress-chart circle { fill:var(--accent); stroke:#fff; stroke-width:2; }
 .chart-labels { display:flex; justify-content:space-between; gap:5px; margin:0 2px 10px; overflow:hidden; }
 .chart-labels span { min-width:0; color:var(--muted); font-size:9px; white-space:nowrap; }
+.chart-labels--year { margin-right:0; }
 .arguments-panel { grid-column:1/-1; }
 .argument-list { display:grid; gap:14px; }
 .argument-list section { border-top:1px solid var(--line); padding-top:18px; }
