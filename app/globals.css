@@ -84,6 +84,7 @@ p { margin-bottom:18px; }
 .ranking-metrics strong { color:var(--accent); font-size:30px; line-height:1; letter-spacing:-1px; }
 .leaderboard-panel>p:last-child { margin:2px 0 0; padding-top:12px; border-top:1px solid var(--line); }
 .streak-panel { grid-column:span 2; display:grid; grid-template-columns:1fr auto; align-items:center; gap:22px 30px; background:var(--accent-soft); }
+.streak-panel>div:first-child { align-self:start; }
 .streak-panel h2 { margin-bottom:6px; font-size:22px; }
 .streak-panel p:last-child { margin:0; color:var(--muted); font-size:13px; }
 .level-summary { display:flex; align-self:start; gap:20px; padding-left:22px; border-left:1px solid var(--accent-line); }
