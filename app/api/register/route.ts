@@ -1,99 +1,27 @@
 import { NextResponse } from "next/server";
-import {
-  encodeRegisteredUser,
-  registeredUserCookieName,
-} from "@/app/lib/current-user";
-import {
-  getOrCreateUser,
-  getUserByEmail,
-} from "@/app/lib/debate-store";
-import {
-  getSupabaseAuthClient,
-  isSupabaseAuthConfigured,
-} from "@/app/lib/supabase-server";
-import type { ChatGPTUser } from "@/app/chatgpt-auth";
+import { createPasswordSession, normalizeLogin, registerPasswordUser, validateLogin, validatePassword } from "@/app/lib/password-auth";
+import { registeredUserCookieName } from "@/app/lib/current-user";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
-    const payload = (await request.json()) as {
-      displayName?: string;
-      email?: string;
-    };
+    const payload = (await request.json()) as { displayName?: string; login?: string; password?: string };
     const displayName = payload.displayName?.trim() ?? "";
-    const email = payload.email?.trim().toLowerCase() ?? "";
-
-    if (displayName.length < 2) {
-      return Response.json(
-        { error: "Enter your name." },
-        { status: 400 },
-      );
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return Response.json(
-        { error: "Enter a valid email address." },
-        { status: 400 },
-      );
-    }
-    const user: ChatGPTUser = {
-      userId: `registered:${email}`,
-      displayName,
-      email,
-      fullName: displayName,
-    };
-    if (await getUserByEmail(email)) {
-      return Response.json(
-        { error: "This email is already registered. Log in with this email." },
-        { status: 409 },
-      );
-    }
-    const storedUser = await getOrCreateUser(user);
-
-    if (isSupabaseAuthConfigured()) {
-      const callbackUrl = new URL("/api/login/callback", request.url);
-      const { error } = await getSupabaseAuthClient().auth.signInWithOtp({
-        email,
-        options: {
-          data: {
-            display_name: displayName,
-            full_name: displayName,
-          },
-          emailRedirectTo: callbackUrl.toString(),
-          shouldCreateUser: true,
-        },
-      });
-
-      if (error) {
-        return Response.json({ error: error.message }, { status: 500 });
-      }
-
-      return Response.json(
-        {
-          emailSent: true,
-          user: storedUser,
-        },
-        { status: 201 },
-      );
-    }
-
-    const response = NextResponse.json({ user: storedUser }, { status: 201 });
-    response.cookies.set({
-      name: registeredUserCookieName(),
-      value: encodeRegisteredUser(user),
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 365,
-    });
-
+    const login = normalizeLogin(payload.login ?? "");
+    const password = payload.password ?? "";
+    if (displayName.length < 2) return Response.json({ error: "Enter your name." }, { status: 400 });
+    const loginError = validateLogin(login);
+    if (loginError) return Response.json({ error: loginError }, { status: 400 });
+    const passwordError = validatePassword(password);
+    if (passwordError) return Response.json({ error: passwordError }, { status: 400 });
+    const user = await registerPasswordUser({ login, password, displayName });
+    const session = await createPasswordSession(user.userId);
+    const response = NextResponse.json({ user: { displayName: user.displayName, login } }, { status: 201 });
+    response.cookies.set({ name: registeredUserCookieName(), value: session.id, httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 60 * 60 * 24 * 30 });
     return response;
   } catch (error) {
-    return Response.json(
-      { error: error instanceof Error ? error.message : "Unexpected error." },
-      { status: 500 },
-    );
+    return Response.json({ error: error instanceof Error ? error.message : "Unexpected error." }, { status: 500 });
   }
 }

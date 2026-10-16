@@ -7,6 +7,20 @@ create table if not exists public.users (
   updated_at timestamptz not null default now()
 );
 
+alter table public.users add column if not exists login text;
+alter table public.users add column if not exists password_hash text;
+create unique index if not exists users_login_unique_idx
+  on public.users (login) where login is not null;
+
+create table if not exists public.user_sessions (
+  id text primary key,
+  user_id text not null references public.users(id) on delete cascade,
+  expires_at timestamptz not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists user_sessions_user_id_idx on public.user_sessions (user_id);
+create index if not exists user_sessions_expires_at_idx on public.user_sessions (expires_at);
+
 create table if not exists public.debates (
   id text primary key,
   user_id text not null references public.users(id) on delete cascade,
@@ -57,6 +71,7 @@ alter table public.users enable row level security;
 alter table public.debates enable row level security;
 alter table public.debate_turns enable row level security;
 alter table public.scores enable row level security;
+alter table public.user_sessions enable row level security;
 
 -- DebateLab writes through the server using SUPABASE_SERVICE_ROLE_KEY.
 -- The service role bypasses RLS. Keeping user-facing tables locked by default
