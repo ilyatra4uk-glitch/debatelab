@@ -2,13 +2,23 @@ import Link from "next/link";
 import { SiteShell } from "../SiteShell";
 import { getCurrentUserState } from "../lib/current-user";
 import { listPractices } from "../lib/debate-store";
+import type { DebateScore } from "../lib/debate-types";
 
 const dateFormatter = new Intl.DateTimeFormat("en-IE", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/Dublin" });
 
-export default async function PracticeModesPage() {
+function statusFor(speeches: number, score: DebateScore | null) {
+  if (score) return "Complete";
+  if (speeches >= 3) return "Ready for feedback";
+  return "In progress";
+}
+
+function ScoreCell({ score }: { score: DebateScore | null }) {
+  if (!score) return <span className="practice-no-score">—</span>;
+  return <div className="practice-score"><strong>{score.overall}/100</strong><span>Structure {score.structure} · Logic {score.logic} · Examples {score.evidence} · Reply {score.rebuttal} · Clarity {score.speakingStyle}</span></div>;
+}
+
+export default async function PracticePage() {
   const { user } = await getCurrentUserState();
   const practices = await listPractices(user.userId);
-  const recentPractices = practices.slice(0, 3);
-
-  return <SiteShell><section className="mode-picker"><div><p className="eyebrow">Practice</p><h1>Choose how to debate</h1><p>Start solo with an AI partner, or prepare for live practice with another student.</p></div><div className="mode-grid"><Link href="/debate-bot" className="mode-card"><p className="eyebrow">Available now</p><h2>Solo practice</h2><p>Build a three-speech case and get personal feedback.</p><span>Start solo practice</span></Link><div className="mode-card is-coming"><p className="eyebrow">Coming soon</p><h2>Live practice</h2><p>Pair with another student for a structured debate.</p><span>In development</span></div></div></section>{practices.length > 0 && <section className="recent-practices"><div className="section-heading"><div><p className="eyebrow">My practices</p><h2>Continue where you left off</h2></div><Link href="/practices" className="text-action">View all</Link></div><div className="recent-practice-list">{recentPractices.map(({ debate, speeches, score }) => <Link key={debate.id} href={`/practices/${debate.id}`} className="recent-practice-row"><time dateTime={debate.createdAt}>{dateFormatter.format(new Date(debate.createdAt))}</time><span className="recent-practice-topic">{debate.motion}</span><span className={`practice-status ${score ? "is-complete" : ""}`}>{score ? `${score.overall}/100` : `${speeches}/3 speeches`}</span></Link>)}</div></section>}</SiteShell>;
+  return <SiteShell><div className="page-heading"><p className="eyebrow">Practice</p><h1>My practices</h1></div>{!practices.length ? <section className="section-block empty-practices"><h2>No practices yet</h2><p>Start a debate from the button in the top navigation.</p></section> : <div className="practice-table-wrap"><table className="practice-table"><caption className="sr-only">Saved debate practices</caption><thead><tr><th>Date</th><th>Topic</th><th>Status</th><th>Score</th></tr></thead><tbody>{practices.map(({ debate, speeches, score }) => <tr key={debate.id}><td className="practice-date"><time dateTime={debate.createdAt}>{dateFormatter.format(new Date(debate.createdAt))}</time></td><td><Link href={`/practices/${debate.id}`} className="practice-topic">{debate.motion}<span>{debate.side === "for" ? "For" : "Against"} the motion · {speeches} of 3 speeches</span></Link></td><td><span className={`practice-status ${score ? "is-complete" : ""}`}>{statusFor(speeches, score)}</span></td><td><ScoreCell score={score} /></td></tr>)}</tbody></table></div>}</SiteShell>;
 }
