@@ -37,7 +37,7 @@ export function FriendsClient({ incoming }: { incoming: FriendInvitation[] }) {
       <span>Add by login</span>
       <form className="friend-invite-form" onSubmit={invite}>
         <label className="sr-only" htmlFor="friend-login">Friend&apos;s login</label>
-        <input id="friend-login" value={login} onChange={(event) => setLogin(event.target.value)} placeholder="Search by login" required />
+        <input id="friend-login" name="friend-login" type="search" autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck={false} value={login} onChange={(event) => setLogin(event.target.value)} placeholder="Search by login" required />
         <button className="primary-action" disabled={busy === "invite"}>{busy === "invite" ? "Sending…" : "Add friend"}</button>
       </form>
     </section>
