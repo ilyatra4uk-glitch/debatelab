@@ -63,6 +63,8 @@ p { margin-bottom:18px; }
 .results-summary>div { display:grid; gap:2px; }
 .results-summary strong { color:var(--accent); font-size:34px; line-height:1; letter-spacing:-1.5px; }
 .results-summary span { color:var(--muted); font-size:12px; }
+.result-progress { display:grid; grid-column:1/-1; gap:3px; padding-top:10px; border-top:1px solid var(--line); }
+.result-progress>span { font-size:11px; font-weight:700; }
 .leaderboard-panel { display:grid; gap:12px; padding:26px; border:1px solid var(--line); border-radius:12px; background:#fff; }
 .ranking-metrics { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
 .ranking-metrics>div { display:grid; gap:3px; }
@@ -96,6 +98,7 @@ p { margin-bottom:18px; }
 .progress-chart-panel { display:grid; align-content:start; }
 .progress-chart { width:100%; height:auto; margin:6px 0 3px; overflow:visible; }
 .progress-chart line { stroke:var(--accent-line); stroke-width:1; }
+.progress-chart text { fill:var(--muted); font-size:8px; text-anchor:end; }
 .progress-chart polyline { fill:none; stroke:var(--accent); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
 .progress-chart circle { fill:var(--accent); stroke:#fff; stroke-width:2; }
 .chart-labels { display:flex; justify-content:space-between; gap:5px; margin:0 2px 10px; overflow:hidden; }
