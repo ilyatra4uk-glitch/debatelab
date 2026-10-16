@@ -53,7 +53,7 @@ p { margin-bottom:16px; }
 .client-history-panel { background:#f0f7f4; }
 .section-title { margin-bottom:22px; }
 .section-title h2 { margin-bottom:0; font-size:28px; }
-.debate-tool { max-width:840px; margin:auto; display:grid; gap:18px; padding:32px; }
+.debate-tool { width:100%; display:grid; gap:18px; padding:32px; }
 .debate-tool .section-title { margin:0; }
 .tool-copy { color:var(--muted); font-size:14px; }
 .motion-list { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
