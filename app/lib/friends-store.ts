@@ -106,7 +106,7 @@ export async function getCommunityLeaders(): Promise<{ practices: FriendStats | 
     return { userId, displayName: String(row.display_name ?? "Debater"), login: row.login ? String(row.login) : null, practiceCount: practices.length, averageScore: marks.length ? Math.round(marks.reduce((sum, mark) => sum + mark, 0) / marks.length) : null, currentStreak: currentStreak(practices.map((debate) => String(debate.created_at))) };
   });
   return {
-    practices: [...rows].filter((row) => row.practiceCount > 0).sort((a, b) => b.practiceCount - a.practiceCount || (b.averageScore ?? -1) - (a.averageScore ?? -1))[0] ?? null,
+    practices: [...rows].filter((row) => row.practiceCount > 0).sort((a, b) => b.practiceCount - a.practiceCount || b.currentStreak - a.currentStreak)[0] ?? null,
     streak: [...rows].filter((row) => row.currentStreak > 0).sort((a, b) => b.currentStreak - a.currentStreak || b.practiceCount - a.practiceCount)[0] ?? null,
   };
 }
