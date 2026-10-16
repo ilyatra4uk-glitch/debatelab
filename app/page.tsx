@@ -24,6 +24,12 @@ export default async function Home() {
     { label: "Debates", value: String(stats.debateCount) },
     { label: "Avg score", value: stats.averageScore ? String(stats.averageScore) : "--" },
   ];
+  const chart = stats.progressHistory;
+  const chartPoints = chart.map((entry, index) => {
+    const x = chart.length === 1 ? 150 : 16 + (index * 268) / (chart.length - 1);
+    const y = 86 - entry.comparableScore * 0.7;
+    return `${x},${y}`;
+  }).join(" ");
 
   return (
     <SiteShell>
@@ -79,14 +85,10 @@ export default async function Home() {
           </p>
         </article>
 
-        <article className="progress-panel">
-          <p className="eyebrow">Progress</p>
+        <article className="progress-panel progress-chart-panel">
+          <p className="eyebrow">Progress score</p>
           <h2>{stats.improvementTrend.label}</h2>
-          <p>
-            {stats.improvementTrend.delta === null
-              ? "Finish another judged bot debate to see whether your score is moving up."
-              : `${stats.improvementTrend.delta > 0 ? "+" : ""}${stats.improvementTrend.delta} points since your previous judged debate.`}
-          </p>
+          {chart.length ? <><svg className="progress-chart" viewBox="0 0 300 100" role="img" aria-label="Comparable progress score over recent debates"><line x1="16" y1="86" x2="284" y2="86" /><line x1="16" y1="16" x2="16" y2="86" /><polyline points={chartPoints} />{chart.map((entry, index) => { const [x, y] = chartPoints.split(" ")[index].split(","); return <circle key={entry.id} cx={x} cy={y} r="4"><title>{`${entry.comparableScore}/100 · ${entry.division}`}</title></circle>; })}</svg><p>{chart.at(-1)?.comparableScore}/100 comparable score · Junior 1.00×, Senior 1.04×</p></> : <p>Finish a judged practice to start your progress chart.</p>}
         </article>
 
         <article className="progress-panel focus-panel">

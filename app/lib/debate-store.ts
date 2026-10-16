@@ -7,11 +7,13 @@ import type {
   DebateScore,
   DebateSide,
   DebateTurn,
+  ProgressScore,
   ProfileStats,
   PracticeDetail,
   PracticeSummary,
   PracticeRevision,
 } from "./debate-types";
+import { debateTopics } from "./debate-topics";
 import {
   getSupabaseDatabaseClient,
   isSupabaseDatabaseConfigured,
@@ -330,6 +332,7 @@ export async function getProfileStats(userId: string): Promise<ProfileStats> {
     latestDebate: debates[0] ?? null,
     latestScore: scores[0] ?? null,
     scoreHistory,
+    progressHistory: getProgressHistory(scores, debates),
     improvementTrend,
     weakestSkill,
     focusRecommendation: getFocusRecommendation(weakestSkill.label),
@@ -561,6 +564,7 @@ async function getSupabaseProfileStats(userId: string): Promise<ProfileStats> {
     latestDebate: debates[0] ?? null,
     latestScore: scores[0] ?? null,
     scoreHistory: scores.slice(0, 5),
+    progressHistory: getProgressHistory(scores, debates),
     improvementTrend,
     weakestSkill,
     focusRecommendation: getFocusRecommendation(weakestSkill.label),
@@ -571,6 +575,18 @@ async function getSupabaseProfileStats(userId: string): Promise<ProfileStats> {
       createdAt: String(turn.created_at),
     })),
   };
+}
+
+function getProgressHistory(scores: DebateScore[], debates: DebateRecord[]): ProgressScore[] {
+  const topicDivision = new Map(debateTopics.map((topic) => [topic.motion, topic.level]));
+  const debateById = new Map(debates.map((debate) => [debate.id, debate]));
+  return scores.slice(0, 8).reverse().map((score) => {
+    const division = topicDivision.get(debateById.get(score.debateId)?.motion ?? "") ?? "Junior";
+    // Senior topics in Irish post-primary competitions allow more preparation and longer speeches;
+    // the small 4% coefficient makes the learning trend comparable without turning difficulty into a bonus.
+    const comparableScore = Math.min(100, Math.round(score.overall * (division === "Senior" ? 1.04 : 1)));
+    return { id: score.id, createdAt: score.createdAt, rawScore: score.overall, comparableScore, division };
+  });
 }
 
 function getGamification(

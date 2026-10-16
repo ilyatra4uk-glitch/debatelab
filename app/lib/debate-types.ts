@@ -34,6 +34,14 @@ export type DebateScore = {
   createdAt: string;
 };
 
+export type ProgressScore = {
+  id: string;
+  createdAt: string;
+  rawScore: number;
+  comparableScore: number;
+  division: "Junior" | "Senior";
+};
+
 export type ProfileStats = {
   debateCount: number;
   averageScore: number | null;
@@ -55,6 +63,7 @@ export type ProfileStats = {
   latestDebate: DebateRecord | null;
   latestScore: DebateScore | null;
   scoreHistory: DebateScore[];
+  progressHistory: ProgressScore[];
   improvementTrend: {
     label: string;
     delta: number | null;

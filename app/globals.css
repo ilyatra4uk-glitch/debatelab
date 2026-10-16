@@ -60,6 +60,11 @@ p { margin-bottom:16px; }
 .history-panel h2 { color:var(--accent); font-size:28px; }
 .history-panel p:last-child,.progress-panel p:last-child,.arguments-panel>p:last-child { color:var(--muted); font-size:14px; margin-bottom:0; }
 .progress-panel h2 { font-size:22px; }
+.progress-chart-panel { display:grid; align-content:start; }
+.progress-chart { width:100%; height:auto; margin:6px 0 3px; overflow:visible; }
+.progress-chart line { stroke:#c8ddd4; stroke-width:1; }
+.progress-chart polyline { fill:none; stroke:var(--accent); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+.progress-chart circle { fill:var(--accent); stroke:#fff; stroke-width:2; }
 .arguments-panel { grid-column:1/-1; }
 .argument-list { display:grid; gap:14px; }
 .argument-list section { border-top:1px solid var(--line); padding-top:18px; }
