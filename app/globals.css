@@ -284,6 +284,12 @@ summary { cursor:pointer; color:var(--accent); font-weight:600; }
 .empty-practices { padding:48px; text-align:center; }
 .empty-practices p { color:var(--muted); max-width:520px; margin:16px auto 24px; }
 .compete-placeholder { max-width:680px; padding:46px; }
+.compete-page,.live-room { display:grid; gap:26px; max-width:840px; }
+.live-setup,.live-list { display:grid; gap:16px; padding:26px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+.live-setup form { display:grid; gap:14px; max-width:620px; }
+.live-list article { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:15px 0; border-top:1px solid var(--line); }
+.live-list article>div { display:grid; gap:3px; }.live-list span,.live-room-meta { color:var(--muted); font-size:13px; }
+.live-room-meta { display:flex; flex-wrap:wrap; gap:10px 18px; padding-bottom:18px; border-bottom:1px solid var(--line); }
 .compete-placeholder p:last-child { max-width:520px; color:var(--muted); margin-bottom:0; }
 .friend-toolbar { display:flex; justify-content:flex-start; padding:0 0 24px; border-bottom:1px solid var(--line); }
 .friend-add-button { min-height:38px; padding:7px 13px; font-size:13px; }

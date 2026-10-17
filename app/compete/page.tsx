@@ -1,11 +1,2 @@
-import { SiteShell } from "../SiteShell";
-
-export default function CompetePage() {
-  return <SiteShell>
-    <section className="section-block compete-placeholder">
-      <p className="eyebrow">Coming soon</p>
-      <h1>Compete with a partner</h1>
-      <p>Pair debates, shared motions, and friendly results will live here. For now, keep building your skills in Practice.</p>
-    </section>
-  </SiteShell>;
-}
+import { SiteShell } from "../SiteShell"; import { getCurrentUserState } from "../lib/current-user"; import { getOrCreateUser } from "../lib/debate-store"; import { getFriendsData } from "../lib/friends-store"; import { listLiveDebates } from "../lib/live-debate-store"; import { CompeteClient } from "./CompeteClient";
+export default async function CompetePage(){const {user}=await getCurrentUserState();const stored=await getOrCreateUser(user);const [{friends},debates]=await Promise.all([getFriendsData(stored.userId),listLiveDebates(stored.userId)]);return <SiteShell><CompeteClient userId={stored.userId} friends={friends.map(f=>({name:f.displayName,username:f.login??""}))} debates={debates}/></SiteShell>;}
