@@ -11,7 +11,7 @@ const { generateBotReply, judgeDebate, reviewRevision } = await import(`data:tex
 const debate = { motion: 'Ban private schools', side: 'for' };
 const turns = [{ speaker: 'user', content: 'Funding public schools reduces inequality.' }, { speaker: 'bot', content: 'A ban alone cannot improve public funding.' }];
 const round = [...turns, ...turns, ...turns];
-const score = { structure: 7, logic: 6, evidence: 5, rebuttal: 6, speakingStyle: 8, overall: 64, rank: 'Bronze I', feedback: 'Explain how the ban changes public school funding.' };
+const score = { structure: 7, logic: 6, evidence: 5, rebuttal: 6, speakingStyle: 8, overall: 70, rank: '70–72', feedback: 'Explain how the ban changes public school funding.' };
 const response = (text, extra = {}) => ({ status: 'completed', output: [{ type: 'reasoning' }, { type: 'message', content: [{ type: 'output_text', text }] }], ...extra });
 
 test('AI integration', async (t) => {

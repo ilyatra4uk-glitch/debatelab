@@ -185,6 +185,7 @@ p { margin-bottom:18px; }
 .turn-card,.ranking-card { border:1px solid var(--line); background:#f8fafb; border-radius:10px; padding:22px; }
 .turn-card p:last-child { margin-bottom:0; white-space:pre-wrap; overflow-wrap:anywhere; }
 .ranking-card { background:var(--accent-soft); border-color:var(--accent-line); }
+.score-band { margin:-8px 0 16px; color:var(--accent); font-size:13px; font-weight:700; }
 .score-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:16px 0; }
 .score-grid span,.score-grid strong { border:1px solid #dfebe4; border-radius:7px; background:white; padding:10px; font-size:13px; }
 .score-grid strong { grid-column:1/-1; color:var(--accent); font-size:22px; text-align:center; }

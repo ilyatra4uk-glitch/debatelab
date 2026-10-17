@@ -32,7 +32,7 @@ globalThis.fetch = async (url, options) => {
   if (String(url) !== 'https://api.openai.com/v1/responses') return originalFetch(url, options);
   const body = JSON.parse(options.body);
   if (body.input[1].content.includes('FAIL_AI')) return new Response('{}', { status: 503 });
-  const score = { structure:7, logic:7, evidence:7, rebuttal:7, speakingStyle:7, overall:70, rank:'Silver II', feedback:'What worked: your school example.\\nNext step: explain the impact.\\nTry this: More time to rest helps pupils concentrate.' };
+  const score = { structure:7, logic:7, evidence:7, rebuttal:7, speakingStyle:7, overall:70, rank:'70–72', feedback:'What worked: your school example.\\nNext step: explain the impact.\\nTry this: More time to rest helps pupils concentrate.' };
   const text = body.text ? JSON.stringify(score) : body.input[0].content.includes('Stage 3') ? 'Thanks for your conclusion. Our disagreement was about the cost.' : 'I see your point, but consider the cost. How would your plan help?';
   return Response.json({ status:'completed', output:[{ type:'message', content:[{ type:'output_text', text }] }] });
 };`);
