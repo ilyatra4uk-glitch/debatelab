@@ -115,6 +115,7 @@ p { margin-bottom:18px; }
 .ranking-metrics>div:last-child { padding-right:0; border-right:0; }
 .ranking-metrics span { color:var(--foreground); font-size:15px; font-weight:700; }
 .ranking-metrics strong { align-self:center; color:var(--accent); font-size:30px; line-height:1; letter-spacing:-1px; }
+.ranking-metrics strong small { font-size:13px; font-weight:650; letter-spacing:0; }
 .leaderboard-panel>p:last-child { margin:2px 0 0; padding-top:12px; border-top:1px solid var(--line); }
 .streak-panel { grid-column:span 2; display:grid; grid-template-columns:1fr auto; align-items:center; gap:22px 30px; background:var(--accent-soft); }
 .streak-panel>div:first-child { align-self:start; }
