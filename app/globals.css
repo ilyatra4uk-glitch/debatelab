@@ -17,6 +17,15 @@ h3 { font-size:17px; line-height:1.4; font-weight:680; }
 p { margin-bottom:18px; }
 .eyebrow { color:var(--muted); font-size:11px; letter-spacing:1.35px; text-transform:uppercase; font-weight:750; margin-bottom:10px; }
 .app-header { background:#fff; border-bottom:1px solid var(--line); }
+.public-page { min-height:100svh; max-width:1200px; padding:0 32px 72px; margin:auto; }
+.public-nav { min-height:76px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); }
+.public-hero { max-width:720px; padding:104px 0 76px; }
+.public-hero h1 { max-width:650px; font-size:clamp(42px,6vw,68px); letter-spacing:-2.6px; }
+.public-hero>p:not(.eyebrow) { max-width:590px; color:var(--muted); font-size:18px; line-height:1.7; }
+.public-hero>div { display:flex; align-items:center; gap:22px; margin-top:30px; }
+.public-features { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.public-features article { padding:24px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+.public-features h2 { font-size:19px; }.public-features p { margin:0; color:var(--muted); font-size:14px; }
 .header-inner { max-width:1200px; min-height:72px; padding:0 32px; margin:auto; display:flex; align-items:center; gap:48px; }
 .brand { display:inline-flex; align-items:center; gap:11px; font-weight:760; font-size:20px; letter-spacing:-.7px; text-decoration:none; color:var(--foreground); white-space:nowrap; }
 .brand-mark { width:34px; height:34px; }
